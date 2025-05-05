@@ -62,7 +62,7 @@ function App() {
     }
   };
 
-  // Generate initial paragraph on mount.
+  // Generate initial paragraph on component mount.
   useEffect(() => {
     const { min, max } = getWordRange(paraLength);
     setTestText(generateParagraph(min, max));
@@ -197,51 +197,57 @@ function App() {
 
   return (
     <div className={`container ${darkMode ? "dark-mode" : ""}`}>
-      <h1>Speed Typing Test</h1>
-      <div className="settings">
+      <header>
+        <h1>Typing Speed Test</h1>
+        <p>test & improve your typing speed with <b>speedtesttyping.net</b></p>
+      </header>
+
+      <nav className="settings">
         <label htmlFor="para-length">Paragraph Length:</label>
-        <select
-          id="para-length"
-          value={paraLength}
-          onChange={handleParaLengthChange}
-        >
+        <select id="para-length" value={paraLength} onChange={handleParaLengthChange}>
           <option value="short">Short (70-80 words)</option>
           <option value="medium">Medium (125-150 words)</option>
           <option value="long">Long (200-250 words)</option>
         </select>
-      </div>
-      <div className="test-box">
-        <div className="prompt-text">
-          {renderTestText()}
-        </div>
-        <textarea
-          placeholder="Start typing here..."
-          value={userInput}
-          onChange={handleInputChange}
-          disabled={isFinished}
-          rows="8"
-        />
-      </div>
-      <div className="stats">
-        <p>Time Elapsed: <span>{timeElapsed}</span> sec</p>
-        <p>WPM: <span>{wpm}</span></p>
-        <p>Accuracy: <span>{accuracy.toFixed(2)}</span>%</p>
-      </div>
-      <div className="buttons">
-        <button onClick={handleFinishClick} disabled={isFinished || !isStarted}>
-          Finish Test
-        </button>
-        <button onClick={resetTest}>Reset</button>
-      </div>
-      {/* Footer placeholder */}
-      <div className="footer">
+      </nav>
+
+      <main>
+        <section className="test-box">
+          <div className="prompt-text">
+            {renderTestText()}
+          </div>
+          <textarea
+            placeholder="Start typing here..."
+            value={userInput}
+            onChange={handleInputChange}
+            disabled={isFinished}
+            rows="8"
+          />
+        </section>
+
+        <section className="stats">
+          <p>Time Elapsed: <span>{timeElapsed}</span> sec</p>
+          <p>WPM: <span>{wpm}</span></p>
+          <p>Accuracy: <span>{accuracy.toFixed(2)}</span>%</p>
+        </section>
+
+        <section className="buttons">
+          <button onClick={handleFinishClick} disabled={isFinished || !isStarted}>
+            Finish Test
+          </button>
+          <button onClick={resetTest}>Reset</button>
+        </section>
+      </main>
+
+      <footer className="footer">
         <p>
           Placeholder text with a{" "}
           <a href="https://example.com" target="_blank" rel="noopener noreferrer">
             link
           </a>.
         </p>
-      </div>
+      </footer>
+
       {/* Settings button and panel for dark mode */}
       <div className="settings-toggle">
         <button className="gear-button" onClick={toggleSettingsPanel}>
@@ -251,11 +257,7 @@ function App() {
           <div className="settings-panel">
             <label>
               Dark Mode:
-              <input
-                type="checkbox"
-                checked={darkMode}
-                onChange={handleDarkModeToggle}
-              />
+              <input type="checkbox" checked={darkMode} onChange={handleDarkModeToggle} />
             </label>
           </div>
         )}
