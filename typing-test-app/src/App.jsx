@@ -241,7 +241,7 @@ function App() {
 
       <footer className="footer">
         <p>
-          Placeholder text with a{" "}
+          Practice a bit, with a single click, using this {" "}
           <a href="https://example.com" target="_blank" rel="noopener noreferrer">
             link
           </a>.
