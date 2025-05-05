@@ -48,6 +48,8 @@ function App() {
   const [isFinished, setIsFinished] = useState(false);
 
   const intervalRef = useRef(null);
+    // ref for the scrolling container
+    const promptRef = useRef(null);
 
   // Function to get min/max words based on chosen paragraph length.
   const getWordRange = (lengthSetting) => {
@@ -125,6 +127,8 @@ function App() {
     setIsFinished(false);
     const { min, max } = getWordRange(paraLength);
     setTestText(generateParagraph(min, max));
+     // reset scroll to top
+    if (promptRef.current) promptRef.current.scrollTop = 0;
   };
 
   // Manual finish option.
@@ -180,6 +184,9 @@ function App() {
     setIsFinished(false);
     const { min, max } = getWordRange(value);
     setTestText(generateParagraph(min, max));
+
+    // scroll back to top of the new prompt
+    if (promptRef.current) promptRef.current.scrollTop = 0;
   };
 
   // Toggle dark mode and persist the setting.
@@ -194,6 +201,42 @@ function App() {
   const toggleSettingsPanel = () => {
     setShowSettings(prev => !prev);
   };
+
+    // only scroll when the current char passes into the 3rd‐from‐bottom line
+    useEffect(() => {
+      const container = promptRef.current;
+      if (!container) return;
+    
+      // compute line-height from CSS (in pixels)
+      const style = window.getComputedStyle(container);
+      const lineHeight = parseFloat(style.lineHeight);
+    
+      const currentSpan = container.querySelector('span.current');
+      if (!currentSpan) return;
+    
+      const offsetTop   = currentSpan.offsetTop;  // position of span within content
+      const scrollTop   = container.scrollTop;    // how far we've scrolled already
+      const scrollHeight= container.scrollHeight; // total content height
+      const clientHeight= container.clientHeight; // visible height
+    
+      // total number of text lines in the paragraph
+      const totalLines  = Math.ceil(scrollHeight / lineHeight);
+      // which line is our “current” on?  
+      const currentLine = Math.floor((offsetTop - scrollTop) / lineHeight);
+    
+      // Only start scrolling when we hit the second‑to‑last line:
+      //   currentLine >= (totalLines - 2)
+      if (currentLine >= totalLines - 2) {
+        // every time the cursor drops below the visible bottom,
+        // advance scroll by exactly one line
+        // but only if not already scrolled past
+        const maxScrollTop = scrollHeight - clientHeight;
+        const newScrollTop = Math.min(scrollTop + lineHeight, maxScrollTop);
+        if (newScrollTop > scrollTop) {
+          container.scrollTop = newScrollTop;
+        }
+      }
+    }, [userInput.length]);
 
   return (
     <div className={`container ${darkMode ? "dark-mode" : ""}`}>
@@ -213,7 +256,7 @@ function App() {
 
       <main>
         <section className="test-box">
-          <div className="prompt-text">
+          <div ref={promptRef} className="prompt-text">
             {renderTestText()}
           </div>
           <textarea

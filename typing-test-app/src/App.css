@@ -65,7 +65,11 @@ h1 {
 
 .test-box {
   margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Horizontally center child elements */
 }
+
 
 .prompt-text {
   background: #f7f9fa;
@@ -95,12 +99,15 @@ h1 {
 
 textarea {
   width: 100%;
+  max-width: 1000px; /* Prevents it from stretching too wide */
   padding: 1rem;
   font-size: 1.1rem;
   border: 1px solid #ccd6dd;
   border-radius: 8px;
   resize: vertical;
+  box-sizing: border-box; /* Ensures padding doesn’t increase total width */
 }
+
 
 .stats {
   display: flex;
