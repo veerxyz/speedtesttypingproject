@@ -290,6 +290,18 @@ function App() {
             link
           </a>.
         </p>
+        <p className="text-sm text-gray-400 mt-1">
+  If it helps you, please consider supporting this project with {' '}
+  <a
+    href="https://www.patreon.com/theindiecompny"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="underline text-blue-400 hover:text-blue-500"
+  >
+  $1
+  </a>.
+</p>
+
       </footer>
 
       {/* Settings button and panel for dark mode */}
