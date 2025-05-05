@@ -81,7 +81,7 @@ h1 {
 }
 
 .prompt-text span.correct {
-  color: blue;
+  color: greenyellow;
 }
 
 .prompt-text span.incorrect {
