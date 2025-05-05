@@ -199,7 +199,7 @@ function App() {
     <div className={`container ${darkMode ? "dark-mode" : ""}`}>
       <header>
         <h1>Typing Speed Test</h1>
-        <p>test & improve your typing speed with <b>speedtesttyping.net</b></p>
+        <p>speed test your typing with <b>speedtesttyping.net</b></p>
       </header>
 
       <nav className="settings">
