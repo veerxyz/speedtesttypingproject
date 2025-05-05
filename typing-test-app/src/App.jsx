@@ -241,6 +241,7 @@ function App() {
 
       <footer className="footer">
         <p>
+        <img src="icons/icon32.png" alt="Site Icon" width="24" height="24" style={{ verticalAlign: 'middle', marginRight: '8px' }} />
           Practice a bit, with a single click, using this {" "}
           <a href="https://example.com" target="_blank" rel="noopener noreferrer">
             link
