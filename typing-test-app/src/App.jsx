@@ -318,17 +318,17 @@ function App() {
         <div className="share-panel">
           <h2>Share with your friends</h2>
           <p>and start a public log! </p>
-          <textarea readOnly value={`Today, My WPM was ${wpm}. It'll be better tomorrow. \nWhat's yours? 🤔\n----------\nvia speedtesttyping.net ⌨️\n#speedtesttyping`} />
+          <textarea readOnly value={`Today, My WPM is ${wpm} with ${accuracy.toFixed(2)}% accuracy!\nIt'll be better tomorrow.📈 \nWhat's yours? 🤔\n----------\nvia speedtesttyping.net ⌨️\n#speedtesttyping`} />
           <div className="share-buttons">
             <a
-              href={`https://x.com/intent/tweet?text=${encodeURIComponent(`Today, My WPM was ${wpm}. It'll be better tomorrow. \nWhat's yours? 🤔\n----------\nvia speedtesttyping.net ⌨️\n#speedtesttyping`)}`}
+              href={`https://x.com/intent/tweet?text=${encodeURIComponent(`Today, My WPM is ${wpm} with ${accuracy.toFixed(2)}% accuracy!\nIt'll be better tomorrow.📈 \nWhat's yours? 🤔\n----------\nvia speedtesttyping.net ⌨️\n#speedtesttyping`)}`}
               target="_blank" rel="noopener noreferrer"
             >Tweet</a>
             <a
-              href={`https://www.threads.net/intent/post?text=${encodeURIComponent(`Today, My WPM was ${wpm}. It'll be better tomorrow. \nWhat's yours?\n----------\nvia speedtesttyping.net\n#speedtesttyping`)}`}
+              href={`https://www.threads.net/intent/post?text=${encodeURIComponent(`Today, My WPM is ${wpm} with ${accuracy.toFixed(2)}% accuracy!\nIt'll be better tomorrow.📈 \nWhat's yours?\n----------\nvia speedtesttyping.net ⌨️\n#speedtesttyping`)}`}
               target="_blank" rel="noopener noreferrer"
             >Threads</a>
-            <button onClick={() => navigator.clipboard.writeText(`Today, My WPM was ${wpm}. It'll be better tomorrow. \nWhat's yours? 🤔\n----------\nvia speedtesttyping.net ⌨️\n#speedtesttyping`)}>
+            <button onClick={() => navigator.clipboard.writeText(`Today, My WPM is ${wpm} with ${accuracy.toFixed(2)}% accuracy!\nIt'll be better tomorrow.📈 \nWhat's yours? 🤔\n----------\nvia speedtesttyping.net ⌨️\n#speedtesttyping`)}>
               Copy
             </button>
             <button onClick={handleCloseShare}>Close</button>
