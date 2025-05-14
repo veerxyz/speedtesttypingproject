@@ -188,7 +188,14 @@ textarea {
   color: #f1f1f1;
   border: 1px solid #555;
 }
-.container.dark-mode .share-buttons a,
+.container.dark-mode .share-buttons a.tweet-btn {
+  background: #1da1f2;
+  color: #fff;
+}
+.container.dark-mode .share-buttons a.threads-btn {
+  background: #000;
+  color: #fff;
+}
 .container.dark-mode .share-buttons button {
   background: #555;
   color: #f1f1f1;
@@ -203,8 +210,24 @@ textarea {
 .share-buttons button {
   margin: 0.25rem; padding: 0.5rem 1rem; border: none; border-radius: 4px; cursor: pointer;
 }
-.share-buttons a { background: #1da1f2; color: #fff; text-decoration: none; }
-.share-buttons a:last-of-type { background: #000; }
+share-buttons a {
+  text-decoration: none;
+}
+.share-buttons a.tweet-btn {
+  background: #1da1f2;
+  color: #fff;
+}
+.share-buttons a.threads-btn {
+  background: #000;
+  color: #fff;
+}
+.buttons button.share-btn {
+  background-color: #1da1f2;
+  color: #fff;
+}
+.buttons button.share-btn:hover {
+  opacity: 0.9;
+}
 .share-buttons button { background: #ccc; }
 .gear-button {
   background: transparent;

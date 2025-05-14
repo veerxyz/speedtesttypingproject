@@ -285,8 +285,8 @@ function App() {
           </button>
           <button onClick={resetTest}>Reset</button>
            {isFinished && (
-            <button onClick={handleShowShare}>Share</button>
-         )}
+         <button className="share-btn" onClick={handleShowShare}>Share</button>
+        )}
         </section>
       </main>
 
@@ -318,17 +318,17 @@ function App() {
         <div className="share-panel">
           <h2>Share with your friends</h2>
           <p>and start a public log! </p>
-          <textarea readOnly value={`Today, My WPM is ${wpm} with ${accuracy.toFixed(2)}% accuracy!\nIt'll be better tomorrow.📈 \nWhat's yours? 🤔\n----------\nvia speedtesttyping.net ⌨️\n#speedtesttyping`} />
+          <textarea readOnly value={`Today, My WPM is ${wpm} with ${accuracy.toFixed(2)}% accuracy!\nIt'll be better tomorrow.📈 \nWhat's yours? 🤔\n----------\n⌨️#speedtestyourtyping via speedtesttyping.net`} />
           <div className="share-buttons">
-            <a
-              href={`https://x.com/intent/tweet?text=${encodeURIComponent(`Today, My WPM is ${wpm} with ${accuracy.toFixed(2)}% accuracy!\nIt'll be better tomorrow.📈 \nWhat's yours? 🤔\n----------\nvia speedtesttyping.net ⌨️\n#speedtesttyping`)}`}
+            <a className="tweet-btn"
+              href={`https://x.com/intent/tweet?text=${encodeURIComponent(`Today, My WPM is ${wpm} with ${accuracy.toFixed(2)}% accuracy!\nIt'll be better tomorrow.📈 \nWhat's yours? 🤔\n----------\n⌨️#speedtestyourtyping via speedtesttyping.net`)}`}
               target="_blank" rel="noopener noreferrer"
             >Tweet</a>
-            <a
-              href={`https://www.threads.net/intent/post?text=${encodeURIComponent(`Today, My WPM is ${wpm} with ${accuracy.toFixed(2)}% accuracy!\nIt'll be better tomorrow.📈 \nWhat's yours?\n----------\nvia speedtesttyping.net ⌨️\n#speedtesttyping`)}`}
+            <a className="threads-btn"
+              href={`https://www.threads.net/intent/post?text=${encodeURIComponent(`Today, My WPM is ${wpm} with ${accuracy.toFixed(2)}% accuracy!\nIt'll be better tomorrow. \nWhat's yours?\n----------\n#speedtestyourtyping via speedtesttyping.net`)}`}
               target="_blank" rel="noopener noreferrer"
             >Threads</a>
-            <button onClick={() => navigator.clipboard.writeText(`Today, My WPM is ${wpm} with ${accuracy.toFixed(2)}% accuracy!\nIt'll be better tomorrow.📈 \nWhat's yours? 🤔\n----------\nvia speedtesttyping.net ⌨️\n#speedtesttyping`)}>
+            <button onClick={() => navigator.clipboard.writeText(`Today, My WPM is ${wpm} with ${accuracy.toFixed(2)}% accuracy!\nIt'll be better tomorrow.📈 \nWhat's yours? 🤔\n----------\n⌨️#speedtestyourtyping via speedtesttyping.net`)}>
               Copy
             </button>
             <button onClick={handleCloseShare}>Close</button>
