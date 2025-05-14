@@ -238,12 +238,16 @@ function App() {
         }
       }
     }, [userInput.length]);
-
+// Trigger share panel
+  const [showShare, setShowShare] = useState(false);
+  const handleShowShare = () => setShowShare(true);
+  const handleCloseShare = () => setShowShare(false);
   return (
     <div className={`container ${darkMode ? "dark-mode" : ""}`}>
       <header>
         <h1>Typing Speed Test</h1>
         <p>speed test your typing with <b>speedtesttyping.net</b></p>
+        <p>We may be the world's fastest "launch to practice" typing test, <b>in our opinion.</b></p>
       </header>
 
       <nav className="settings">
@@ -280,6 +284,9 @@ function App() {
             Finish Test
           </button>
           <button onClick={resetTest}>Reset</button>
+           {isFinished && (
+            <button onClick={handleShowShare}>Share</button>
+         )}
         </section>
       </main>
 
@@ -306,6 +313,30 @@ function App() {
       </footer>
 
       {/* Settings button and panel for dark mode */}
+      {/* Share panel */}
+      { showShare && (
+        <div className="share-panel">
+          <h2>Share with your friends</h2>
+          <p>and start a public log! </p>
+          <textarea readOnly value={`Today, My WPM was ${wpm}. It'll be better tomorrow. \nWhat's yours? 🤔\n----------\nvia speedtesttyping.net ⌨️\n#speedtesttyping`} />
+          <div className="share-buttons">
+            <a
+              href={`https://x.com/intent/tweet?text=${encodeURIComponent(`Today, My WPM was ${wpm}. It'll be better tomorrow. \nWhat's yours? 🤔\n----------\nvia speedtesttyping.net ⌨️\n#speedtesttyping`)}`}
+              target="_blank" rel="noopener noreferrer"
+            >Tweet</a>
+            <a
+              href={`https://www.threads.net/intent/post?text=${encodeURIComponent(`Today, My WPM was ${wpm}. It'll be better tomorrow. \nWhat's yours?\n----------\nvia speedtesttyping.net\n#speedtesttyping`)}`}
+              target="_blank" rel="noopener noreferrer"
+            >Threads</a>
+            <button onClick={() => navigator.clipboard.writeText(`Today, My WPM was ${wpm}. It'll be better tomorrow. \nWhat's yours? 🤔\n----------\nvia speedtesttyping.net ⌨️\n#speedtesttyping`)}>
+              Copy
+            </button>
+            <button onClick={handleCloseShare}>Close</button>
+          </div>
+          <p>Research shows Practice & Public Accountability increases one's chances of success, no matter the goal.🚀</p>
+          <p>I hope this tool helps you, good luck, friend. 😊</p>
+        </div>
+      )}
       <div className="settings-toggle">
         <button className="gear-button" onClick={toggleSettingsPanel}>
           ⚙️
@@ -318,7 +349,9 @@ function App() {
             </label>
           </div>
         )}
+        
       </div>
+
     </div>
   );
 }
