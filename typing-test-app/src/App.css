@@ -178,6 +178,21 @@ textarea {
   background: #fff; padding: 1.5rem; border-radius: 8px; box-shadow: 0 8px 16px rgba(0,0,0,0.2);
   z-index: 1000; width: 90%; max-width: 400px; text-align: center;
 }
+.container.dark-mode .share-panel {
+  background-color: #3c3c3c;
+  color: #f1f1f1;
+  border: 1px solid #555;
+}
+.container.dark-mode .share-panel textarea {
+  background: #2c2c2c;
+  color: #f1f1f1;
+  border: 1px solid #555;
+}
+.container.dark-mode .share-buttons a,
+.container.dark-mode .share-buttons button {
+  background: #555;
+  color: #f1f1f1;
+}
 .share-panel h2 {
   margin-bottom: 1rem;
 }
