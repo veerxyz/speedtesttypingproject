@@ -1,3 +1,4 @@
+// Version 1.1 [publish branch]
 import { useState, useEffect, useRef } from 'react';
 import './App.css';
 
