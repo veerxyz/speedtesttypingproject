@@ -1,4 +1,3 @@
-// Version 1.0.
 import { useState, useEffect, useRef } from 'react';
 import './App.css';
 
@@ -243,7 +242,7 @@ function App() {
   const handleShowShare = () => setShowShare(true);
   const handleCloseShare = () => setShowShare(false);
   return (
-    <div className={`container ${darkMode ? "dark-mode" : ""}`}>
+    <div className={`container ${darkMode ? "dark-mode" : "light-mode"}`}>
       <header>
         <h1>Typing Speed Test</h1>
         <p>speed test your typing with <b>speedtesttyping.net</b></p>

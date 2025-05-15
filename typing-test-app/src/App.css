@@ -1,5 +1,15 @@
 /* Import a modern font */
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap');
+/* Force the root to respect the manually chosen theme */
+:root {
+  color-scheme: light dark; /* Enables form controls to respond appropriately */
+}
+
+/* App container explicitly sets background/text */
+body, .container {
+  color: #000;
+  background-color: #e6ecf0;
+}
 
 body {
   margin: 0;
@@ -20,6 +30,22 @@ body {
   border-radius: 10px;
   box-shadow: 0 10px 20px rgba(0,0,0,0.1);
   text-align: center;
+}
+/* Light mode override — necessary when system is in dark mode */
+.container.light-mode {
+  background-color: #fff;
+  color: #000;
+}
+
+.container.light-mode .prompt-text {
+  background: #f7f9fa;
+  border-color: #e1e8ed;
+}
+
+.container.light-mode textarea {
+  background: #fff;
+  color: #000;
+  border-color: #ccd6dd;
 }
 
 /* Dark mode styles for container and text */
