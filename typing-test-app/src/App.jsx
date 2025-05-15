@@ -26,7 +26,7 @@ function App() {
   };
 
   // Retrieve saved paragraph length setting from localStorage (if available).
-  const getSavedParaLength = () => localStorage.getItem("paraLength") || "long";
+  const getSavedParaLength = () => localStorage.getItem("paraLength") || "short";
 
   // Retrieve saved dark mode setting (if available) and convert to boolean.
   const getSavedDarkMode = () => localStorage.getItem("darkMode") === "true";
