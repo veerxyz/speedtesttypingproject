@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import './App.css';
 import GameMode from './GameMode';
+import GameMode3D from './GameMode3D'; // ADD THIS IMPORT
+
 function App() {
   // List of common words for paragraph generation.
   const wordsList = [
@@ -14,7 +16,6 @@ function App() {
     "sunt", "culpa", "officia", "deserunt", "mollit", "anim", "id", "est", "laborum"
   ];
 
-  // Function to generate a paragraph within a specified range.
   const generateParagraph = (minWords, maxWords) => {
     const wordCount = Math.floor(Math.random() * (maxWords - minWords + 1)) + minWords;
     const paragraphArray = [];
@@ -25,20 +26,13 @@ function App() {
     return paragraphArray.join(" ");
   };
 
-  // Retrieve saved paragraph length setting from localStorage (if available).
   const getSavedParaLength = () => localStorage.getItem("paraLength") || "short";
-
-  // Retrieve saved dark mode setting (if available) and convert to boolean.
   const getSavedDarkMode = () => localStorage.getItem("darkMode") === "true";
 
-  // State for the paragraph length option: "short", "medium", "long".
   const [paraLength, setParaLength] = useState(getSavedParaLength());
-  // State for dark mode.
   const [darkMode, setDarkMode] = useState(getSavedDarkMode());
-  // State to control the visibility of the settings panel.
   const [showSettings, setShowSettings] = useState(false);
 
-  // Other component states.
   const [testText, setTestText] = useState("");
   const [userInput, setUserInput] = useState('');
   const [isStarted, setIsStarted] = useState(false);
@@ -46,13 +40,11 @@ function App() {
   const [wpm, setWpm] = useState(0);
   const [accuracy, setAccuracy] = useState(100);
   const [isFinished, setIsFinished] = useState(false);
-  const [mode, setMode] = useState('game'); // 'classic' or 'game'
+  const [mode, setMode] = useState('game3d'); // Changed default to test
 
   const intervalRef = useRef(null);
-    // ref for the scrolling container
-    const promptRef = useRef(null);
+  const promptRef = useRef(null);
 
-  // Function to get min/max words based on chosen paragraph length.
   const getWordRange = (lengthSetting) => {
     switch (lengthSetting) {
       case "short":
@@ -65,14 +57,12 @@ function App() {
     }
   };
 
-  // Generate initial paragraph on component mount.
   useEffect(() => {
     const { min, max } = getWordRange(paraLength);
     setTestText(generateParagraph(min, max));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Update accuracy whenever user input changes.
   useEffect(() => {
     if (userInput.length === 0) {
       setAccuracy(100);
@@ -87,7 +77,6 @@ function App() {
     }
   }, [userInput, testText]);
 
-  // Handle changes in the textarea.
   const handleInputChange = (e) => {
     const value = e.target.value;
     if (!isStarted) {
@@ -98,26 +87,22 @@ function App() {
     }
     setUserInput(value);
 
-    // Automatically end the test once the user has typed the complete text.
     if (value.length === testText.length) {
       endTest();
     }
   };
 
-  // Calculate Words Per Minute (WPM).
   const calculateWPM = (input, seconds) => {
     const wordsCount = input.trim().split(/\s+/).length;
     return seconds > 0 ? Math.round((wordsCount / seconds) * 60) : 0;
   };
 
-  // End the test.
   const endTest = () => {
     clearInterval(intervalRef.current);
     setIsFinished(true);
     setWpm(calculateWPM(userInput, timeElapsed));
   };
 
-  // Reset the test.
   const resetTest = () => {
     clearInterval(intervalRef.current);
     setUserInput('');
@@ -128,25 +113,21 @@ function App() {
     setIsFinished(false);
     const { min, max } = getWordRange(paraLength);
     setTestText(generateParagraph(min, max));
-     // reset scroll to top
     if (promptRef.current) promptRef.current.scrollTop = 0;
   };
 
-  // Manual finish option.
   const handleFinishClick = () => {
     if (isStarted && !isFinished) {
       endTest();
     }
   };
 
-  // Update WPM in real time.
   useEffect(() => {
     if (isStarted && !isFinished) {
       setWpm(calculateWPM(userInput, timeElapsed));
     }
   }, [timeElapsed, userInput, isStarted, isFinished]);
 
-  // Render the test text with live per-character feedback.
   const renderTestText = () => {
     return testText.split("").map((char, index) => {
       let colorClass = "";
@@ -170,12 +151,10 @@ function App() {
     });
   };
 
-  // Handle paragraph length selection change.
   const handleParaLengthChange = (e) => {
     const value = e.target.value;
     setParaLength(value);
     localStorage.setItem("paraLength", value);
-    // Immediately reset the test with a new paragraph.
     clearInterval(intervalRef.current);
     setUserInput('');
     setTimeElapsed(0);
@@ -186,11 +165,9 @@ function App() {
     const { min, max } = getWordRange(value);
     setTestText(generateParagraph(min, max));
 
-    // scroll back to top of the new prompt
     if (promptRef.current) promptRef.current.scrollTop = 0;
   };
 
-  // Toggle dark mode and persist the setting.
   const handleDarkModeToggle = () => {
     setDarkMode(prev => {
       localStorage.setItem("darkMode", (!prev).toString());
@@ -198,50 +175,41 @@ function App() {
     });
   };
 
-  // Toggle showing/hiding the settings panel.
   const toggleSettingsPanel = () => {
     setShowSettings(prev => !prev);
   };
 
-    // only scroll when the current char passes into the 3rd‐from‐bottom line
-    useEffect(() => {
-      const container = promptRef.current;
-      if (!container) return;
-    
-      // compute line-height from CSS (in pixels)
-      const style = window.getComputedStyle(container);
-      const lineHeight = parseFloat(style.lineHeight);
-    
-      const currentSpan = container.querySelector('span.current');
-      if (!currentSpan) return;
-    
-      const offsetTop   = currentSpan.offsetTop;  // position of span within content
-      const scrollTop   = container.scrollTop;    // how far we've scrolled already
-      const scrollHeight= container.scrollHeight; // total content height
-      const clientHeight= container.clientHeight; // visible height
-    
-      // total number of text lines in the paragraph
-      const totalLines  = Math.ceil(scrollHeight / lineHeight);
-      // which line is our “current” on?  
-      const currentLine = Math.floor((offsetTop - scrollTop) / lineHeight);
-    
-      // Only start scrolling when we hit the second‑to‑last line:
-      //   currentLine >= (totalLines - 2)
-      if (currentLine >= totalLines - 2) {
-        // every time the cursor drops below the visible bottom,
-        // advance scroll by exactly one line
-        // but only if not already scrolled past
-        const maxScrollTop = scrollHeight - clientHeight;
-        const newScrollTop = Math.min(scrollTop + lineHeight, maxScrollTop);
-        if (newScrollTop > scrollTop) {
-          container.scrollTop = newScrollTop;
-        }
+  useEffect(() => {
+    const container = promptRef.current;
+    if (!container) return;
+  
+    const style = window.getComputedStyle(container);
+    const lineHeight = parseFloat(style.lineHeight);
+  
+    const currentSpan = container.querySelector('span.current');
+    if (!currentSpan) return;
+  
+    const offsetTop   = currentSpan.offsetTop;
+    const scrollTop   = container.scrollTop;
+    const scrollHeight= container.scrollHeight;
+    const clientHeight= container.clientHeight;
+  
+    const totalLines  = Math.ceil(scrollHeight / lineHeight);
+    const currentLine = Math.floor((offsetTop - scrollTop) / lineHeight);
+  
+    if (currentLine >= totalLines - 2) {
+      const maxScrollTop = scrollHeight - clientHeight;
+      const newScrollTop = Math.min(scrollTop + lineHeight, maxScrollTop);
+      if (newScrollTop > scrollTop) {
+        container.scrollTop = newScrollTop;
       }
-    }, [userInput.length]);
-// Trigger share panel
+    }
+  }, [userInput.length]);
+
   const [showShare, setShowShare] = useState(false);
   const handleShowShare = () => setShowShare(true);
   const handleCloseShare = () => setShowShare(false);
+
   return (
     <div className={`container ${darkMode ? "dark-mode" : "light-mode"}`}>
       <header>
@@ -263,7 +231,8 @@ function App() {
           onChange={(e) => setMode(e.target.value)}
         >
           <option value="classic">Classic Test</option>
-          <option value="game">2D Stairs Test</option>
+          <option value="game">2D Stairs</option>
+          <option value="game3d">3D Isometric</option>
         </select>
 
         <label htmlFor="para-length">Paragraph Length:</label>
@@ -273,11 +242,8 @@ function App() {
           onChange={handleParaLengthChange}
         >
           <option value="short">Short</option>
-          <option value="medium">Medium </option>
-          <option value="long">Long </option>
-          {/* <option value="short">Short (70-80 words)</option>
-          <option value="medium">Medium (125-150 words)</option>
-          <option value="long">Long (200-250 words)</option> */}
+          <option value="medium">Medium</option>
+          <option value="long">Long</option>
         </select>
       </nav>
 
@@ -324,8 +290,10 @@ function App() {
               )}
             </section>
           </>
-        ) : (
+        ) : mode === "game" ? (
           <GameMode darkMode={darkMode} paraLength={paraLength} />
+        ) : (
+          <GameMode3D darkMode={darkMode} paraLength={paraLength} />
         )}
       </main>
 
@@ -362,8 +330,6 @@ function App() {
         </p>
       </footer>
 
-      {/* Settings button and panel for dark mode */}
-      {/* Share panel */}
       {showShare && (
         <div className="share-panel">
           <h2>Share with your friends</h2>
