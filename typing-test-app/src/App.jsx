@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import './App.css';
-
+import GameMode from './GameMode';
 function App() {
   // List of common words for paragraph generation.
   const wordsList = [
@@ -46,6 +46,7 @@ function App() {
   const [wpm, setWpm] = useState(0);
   const [accuracy, setAccuracy] = useState(100);
   const [isFinished, setIsFinished] = useState(false);
+  const [mode, setMode] = useState('game'); // 'classic' or 'game'
 
   const intervalRef = useRef(null);
     // ref for the scrolling container
@@ -245,94 +246,184 @@ function App() {
     <div className={`container ${darkMode ? "dark-mode" : "light-mode"}`}>
       <header>
         <h1>Typing Speed Test</h1>
-        <p>speed test your typing with <b>speedtesttyping.net</b></p>
-        <p>We may be the world's fastest "launch to practice" typing test, <b>in our opinion.</b></p>
+        <p>
+          speed test your typing with <b>speedtesttyping.net</b>
+        </p>
+        <p>
+          We may be the world's fastest "launch to practice" typing test,{" "}
+          <b>in our opinion.</b>
+        </p>
       </header>
 
       <nav className="settings">
+        <label htmlFor="mode-select">Mode:</label>
+        <select
+          id="mode-select"
+          value={mode}
+          onChange={(e) => setMode(e.target.value)}
+        >
+          <option value="classic">Classic Test</option>
+          <option value="game">2D Stairs Test</option>
+        </select>
+
         <label htmlFor="para-length">Paragraph Length:</label>
-        <select id="para-length" value={paraLength} onChange={handleParaLengthChange}>
-          <option value="short">Short (70-80 words)</option>
+        <select
+          id="para-length"
+          value={paraLength}
+          onChange={handleParaLengthChange}
+        >
+          <option value="short">Short</option>
+          <option value="medium">Medium </option>
+          <option value="long">Long </option>
+          {/* <option value="short">Short (70-80 words)</option>
           <option value="medium">Medium (125-150 words)</option>
-          <option value="long">Long (200-250 words)</option>
+          <option value="long">Long (200-250 words)</option> */}
         </select>
       </nav>
 
       <main>
-        <section className="test-box">
-          <div ref={promptRef} className="prompt-text">
-            {renderTestText()}
-          </div>
-          <textarea
-            placeholder="Start typing here..."
-            value={userInput}
-            onChange={handleInputChange}
-            disabled={isFinished}
-            rows="8"
-          />
-        </section>
+        {mode === "classic" ? (
+          <>
+            <section className="test-box">
+              <div ref={promptRef} className="prompt-text">
+                {renderTestText()}
+              </div>
+              <textarea
+                placeholder="Start typing here..."
+                value={userInput}
+                onChange={handleInputChange}
+                disabled={isFinished}
+                rows="8"
+              />
+            </section>
 
-        <section className="stats">
-          <p>Time Elapsed: <span>{timeElapsed}</span> sec</p>
-          <p>WPM: <span>{wpm}</span></p>
-          <p>Accuracy: <span>{accuracy.toFixed(2)}</span>%</p>
-        </section>
+            <section className="stats">
+              <p>
+                Time Elapsed: <span>{timeElapsed}</span> sec
+              </p>
+              <p>
+                WPM: <span>{wpm}</span>
+              </p>
+              <p>
+                Accuracy: <span>{accuracy.toFixed(2)}</span>%
+              </p>
+            </section>
 
-        <section className="buttons">
-          <button onClick={handleFinishClick} disabled={isFinished || !isStarted}>
-            Finish Test
-          </button>
-          <button onClick={resetTest}>Reset</button>
-           {isFinished && (
-         <button className="share-btn" onClick={handleShowShare}>Share</button>
+            <section className="buttons">
+              <button
+                onClick={handleFinishClick}
+                disabled={isFinished || !isStarted}
+              >
+                Finish Test
+              </button>
+              <button onClick={resetTest}>Reset</button>
+              {isFinished && (
+                <button className="share-btn" onClick={handleShowShare}>
+                  Share
+                </button>
+              )}
+            </section>
+          </>
+        ) : (
+          <GameMode darkMode={darkMode} paraLength={paraLength} />
         )}
-        </section>
       </main>
 
       <footer className="footer">
         <p>
-        <img src="icons/icon32.png" alt="Site Icon" width="24" height="24" style={{ verticalAlign: 'middle', marginRight: '8px' }} />
-          Practice a bit, with a single click, using this {" "}
-          <a href="https://chromewebstore.google.com/detail/speed-test-your-typing-sp/jcaljndpimijemjaajnopmaogncojajo" target="_blank" rel="noopener noreferrer">
+          <img
+            src="icons/icon32.png"
+            alt="Site Icon"
+            width="24"
+            height="24"
+            style={{ verticalAlign: "middle", marginRight: "8px" }}
+          />
+          Practice a bit, with a single click, using this{" "}
+          <a
+            href="https://chromewebstore.google.com/detail/speed-test-your-typing-sp/jcaljndpimijemjaajnopmaogncojajo"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             link
-          </a>.
+          </a>
+          .
         </p>
         <p className="text-sm text-gray-400 mt-1">
-  If it helps you, please consider supporting this project with {' '}
-  <a
-    href="https://www.patreon.com/theindiecompny"
-    target="_blank"
-    rel="noopener noreferrer"
-    className="underline text-blue-400 hover:text-blue-500"
-  >
-  $1
-  </a>.
-</p>
-
+          If it helps you, please consider supporting this project with{" "}
+          <a
+            href="https://www.patreon.com/theindiecompny"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline text-blue-400 hover:text-blue-500"
+          >
+            $1
+          </a>
+          .
+        </p>
       </footer>
 
       {/* Settings button and panel for dark mode */}
       {/* Share panel */}
-      { showShare && (
+      {showShare && (
         <div className="share-panel">
           <h2>Share with your friends</h2>
           <p>and start a public log! </p>
-          <textarea readOnly value={`☝️Today, My WPM is ${wpm} with ${accuracy.toFixed(2)}% accuracy in ${timeElapsed} ${timeElapsed === 1 ? 'second' : 'seconds'}!⌚\nIt'll be better tomorrow.📈 \nWhat's yours? 🤔\n----------\n⌨️#speedtestyourtyping via speedtesttyping.net`} />
+          <textarea
+            readOnly
+            value={`☝️Today, My WPM is ${wpm} with ${accuracy.toFixed(
+              2
+            )}% accuracy in ${timeElapsed} ${
+              timeElapsed === 1 ? "second" : "seconds"
+            }!⌚\nIt'll be better tomorrow.📈 \nWhat's yours? 🤔\n----------\n⌨️#speedtestyourtyping via speedtesttyping.net`}
+          />
           <div className="share-buttons">
-            <a className="tweet-btn"
-              href={`https://x.com/intent/tweet?text=${encodeURIComponent(`☝️Today, My WPM is ${wpm} with ${accuracy.toFixed(2)}% accuracy in ${timeElapsed} ${timeElapsed === 1 ? 'second' : 'seconds'}!⌚\nIt'll be better tomorrow.📈 \nWhat's yours? 🤔\n----------\n⌨️#speedtestyourtyping via speedtesttyping.net`)}`}
-              target="_blank" rel="noopener noreferrer"
-            >Tweet</a>
-            <a className="threads-btn"
-              href={`https://www.threads.net/intent/post?text=${encodeURIComponent(`Today, My WPM is ${wpm} with ${accuracy.toFixed(2)}% accuracy in ${timeElapsed} ${timeElapsed === 1 ? 'second' : 'seconds'}!\nIt'll be better tomorrow. \nWhat's yours?\n----------\n#speedtestyourtyping via speedtesttyping.net`)}`}
-              target="_blank" rel="noopener noreferrer"
-            >Threads</a>
-            <button onClick={() => navigator.clipboard.writeText(`☝️Today, My WPM is ${wpm} with ${accuracy.toFixed(2)}% accuracy in ${timeElapsed} ${timeElapsed === 1 ? 'second' : 'seconds'}!⌚\nIt'll be better tomorrow.📈 \nWhat's yours? 🤔\n----------\n⌨️#speedtestyourtyping via speedtesttyping.net`)}>
+            <a
+              className="tweet-btn"
+              href={`https://x.com/intent/tweet?text=${encodeURIComponent(
+                `☝️Today, My WPM is ${wpm} with ${accuracy.toFixed(
+                  2
+                )}% accuracy in ${timeElapsed} ${
+                  timeElapsed === 1 ? "second" : "seconds"
+                }!⌚\nIt'll be better tomorrow.📈 \nWhat's yours? 🤔\n----------\n⌨️#speedtestyourtyping via speedtesttyping.net`
+              )}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Tweet
+            </a>
+            <a
+              className="threads-btn"
+              href={`https://www.threads.net/intent/post?text=${encodeURIComponent(
+                `Today, My WPM is ${wpm} with ${accuracy.toFixed(
+                  2
+                )}% accuracy in ${timeElapsed} ${
+                  timeElapsed === 1 ? "second" : "seconds"
+                }!\nIt'll be better tomorrow. \nWhat's yours?\n----------\n#speedtestyourtyping via speedtesttyping.net`
+              )}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Threads
+            </a>
+            <button
+              onClick={() =>
+                navigator.clipboard.writeText(
+                  `☝️Today, My WPM is ${wpm} with ${accuracy.toFixed(
+                    2
+                  )}% accuracy in ${timeElapsed} ${
+                    timeElapsed === 1 ? "second" : "seconds"
+                  }!⌚\nIt'll be better tomorrow.📈 \nWhat's yours? 🤔\n----------\n⌨️#speedtestyourtyping via speedtesttyping.net`
+                )
+              }
+            >
               Copy
             </button>
             <button onClick={handleCloseShare}>Close</button>
           </div>
-          <p>Research shows Practice & Public Accountability increases one's chances of success, no matter the goal.🚀</p>
+          <p>
+            Research shows Practice & Public Accountability increases one's
+            chances of success, no matter the goal.🚀
+          </p>
           <p>I hope this tool helps you, good luck, friend. 😊</p>
         </div>
       )}
@@ -344,13 +435,15 @@ function App() {
           <div className="settings-panel">
             <label>
               Dark Mode:
-              <input type="checkbox" checked={darkMode} onChange={handleDarkModeToggle} />
+              <input
+                type="checkbox"
+                checked={darkMode}
+                onChange={handleDarkModeToggle}
+              />
             </label>
           </div>
         )}
-        
       </div>
-
     </div>
   );
 }
