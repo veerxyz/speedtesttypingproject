@@ -580,6 +580,11 @@ function GameMode3D({ darkMode, paraLength }) {
     });
     
     setAllLetters(letters);
+     // CLEAR THE INPUT FIELD
+    if (inputRef.current) {
+      inputRef.current.value = '';  // ← ADD THIS LINE
+    }
+  
     setTimeout(() => inputRef.current?.focus(), 100);
   };
 
