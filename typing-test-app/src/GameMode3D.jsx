@@ -14,6 +14,9 @@ function GameMode3D({ darkMode, paraLength }) {
   const [isJumping, setIsJumping] = useState(false);
   const [jumpProgress, setJumpProgress] = useState(0);
   
+  // Track falling blocks with their fall progress
+  const [fallingBlocks, setFallingBlocks] = useState({});
+  
   const animationRef = useRef(null);
   const intervalRef = useRef(null);
   const inputRef = useRef(null);
@@ -34,6 +37,7 @@ function GameMode3D({ darkMode, paraLength }) {
   const TILE_WIDTH = 50;
   const TILE_HEIGHT = 25;
   const BLOCK_DEPTH = 30;
+  const FALL_SPEED = 3; // Pixels per frame
 
   const getWordCount = () => {
     switch (paraLength) {
@@ -181,6 +185,25 @@ function GameMode3D({ darkMode, paraLength }) {
         });
       }
 
+      // Update falling blocks animation
+      setFallingBlocks(prev => {
+        const updated = { ...prev };
+        let hasChanges = false;
+        
+        Object.keys(updated).forEach(key => {
+        //   const blockIndex = parseInt(key);
+          updated[key] += FALL_SPEED;
+          hasChanges = true;
+          
+          // Remove blocks that have fallen off screen
+          if (updated[key] > 500) {
+            delete updated[key];
+          }
+        });
+        
+        return hasChanges ? updated : prev;
+      });
+
       // Clear canvas
       ctx.fillStyle = darkMode ? '#1a1a1a' : '#e6ecf0';
       ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
@@ -220,15 +243,29 @@ function GameMode3D({ darkMode, paraLength }) {
         const letter = allLetters[i];
         const relativeIndex = i - currentLetterIndex;
         
-        // 3D world position - stairs descend as you progress
+          
+      // Skip completed blocks that have finished falling (already removed from fallingBlocks)
+      if (i < currentLetterIndex && fallingBlocks[i] === undefined) {
+        continue; // Don't draw - block has fallen away permanently
+    }
+        // 3D world position - stairs come TOWARD you as you progress
         const worldX = 0; // Always on center line
         const worldY = 0; // FIXED - player height never changes
-        const worldZ = -relativeIndex * 1.5; // Steps go into distance (positive = away from camera)
+        const worldZ = -relativeIndex * 1.5; // Steps come from distance
         
         // Convert to isometric screen position
         const iso = toIso(worldX, worldY, worldZ);
-        const screenX = PLAYER_SCREEN_X + iso.x;
-        const screenY = PLAYER_SCREEN_Y + iso.y;
+        let screenX = PLAYER_SCREEN_X + iso.x;
+        let screenY = PLAYER_SCREEN_Y + iso.y;
+
+        // Apply falling animation if block is completed
+        if (i < currentLetterIndex && fallingBlocks[i] !== undefined) {
+          screenY += fallingBlocks[i]; // Fall down
+          
+          // Fade out as it falls
+          const fadeProgress = Math.min(fallingBlocks[i] / 300, 1);
+          ctx.globalAlpha = 1 - fadeProgress;
+        }
 
         // Block color based on state
         let blockColor;
@@ -278,6 +315,9 @@ function GameMode3D({ darkMode, paraLength }) {
           ctx.textBaseline = 'middle';
           ctx.fillText(letter.char.toUpperCase(), screenX, screenY + TILE_HEIGHT / 2);
         }
+
+        // Reset alpha
+        ctx.globalAlpha = 1;
       }
 
       // Draw player - COMPLETELY FIXED POSITION, only jumps
@@ -361,7 +401,7 @@ function GameMode3D({ darkMode, paraLength }) {
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [allLetters, currentLetterIndex, playerSpeed, darkMode, isJumping, jumpProgress, getSpeedDescription]);
+  }, [allLetters, currentLetterIndex, playerSpeed, darkMode, isJumping, jumpProgress, fallingBlocks, getSpeedDescription]);
 
   // Handle typing
   const handleKeyPress = (e) => {
@@ -379,6 +419,8 @@ function GameMode3D({ darkMode, paraLength }) {
       if (e.key === ' ') {
         setIsJumping(true);
         setJumpProgress(0);
+        // Mark current block as falling
+        setFallingBlocks(prev => ({ ...prev, [currentLetterIndex]: 0 }));
         setCurrentLetterIndex(prev => prev + 1);
         setPlayerSpeed(prev => Math.min(prev + SPEED_INCREMENT, MAX_SPEED));
         setCorrectLetters(prev => prev + 1);
@@ -392,6 +434,8 @@ function GameMode3D({ darkMode, paraLength }) {
     if (typedChar === currentLetter.char.toLowerCase()) {
       setIsJumping(true);
       setJumpProgress(0);
+      // Mark current block as falling
+      setFallingBlocks(prev => ({ ...prev, [currentLetterIndex]: 0 }));
       setCurrentLetterIndex(prev => prev + 1);
       setPlayerSpeed(prev => Math.min(prev + SPEED_INCREMENT, MAX_SPEED));
       setCorrectLetters(prev => prev + 1);
@@ -424,6 +468,7 @@ function GameMode3D({ darkMode, paraLength }) {
     setPlayerSpeed(MIN_SPEED);
     setIsJumping(false);
     setJumpProgress(0);
+    setFallingBlocks({});
     setIsPlaying(false);
     setMistakes(0);
     setCorrectLetters(0);
@@ -465,7 +510,7 @@ function GameMode3D({ darkMode, paraLength }) {
   return (
     <div className="game-mode">
       <div className="game-instructions">
-        <p>🎮 Climb in 3D! Type each letter to ascend the isometric tower! 🏗️⬆️</p>
+        <p>🎮 Climb in 3D! Type letters to make blocks fall and ascend the tower! 🏗️⬇️</p>
       </div>
       
       <canvas 
