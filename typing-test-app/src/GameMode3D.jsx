@@ -212,42 +212,64 @@ function GameMode3D({ darkMode, paraLength }) {
       ctx.strokeStyle = darkMode ? '#2a2a2a' : '#d0d0d0';
       ctx.lineWidth = 1;
       
-      // Grid offset based on current progress
-      const gridOffsetY = currentLetterIndex * 0.3;
+     
       
-      for (let i = -5; i <= 5; i++) {
-        for (let j = -5; j <= 5; j++) {
-          const p1 = toIso(i, -gridOffsetY, j);
-          const p2 = toIso(i + 1, -gridOffsetY, j);
-          const p3 = toIso(i, -gridOffsetY, j + 1);
-          
-          ctx.beginPath();
-          ctx.moveTo(PLAYER_SCREEN_X + p1.x, PLAYER_SCREEN_Y + p1.y + 100);
-          ctx.lineTo(PLAYER_SCREEN_X + p2.x, PLAYER_SCREEN_Y + p2.y + 100);
-          ctx.stroke();
-          
-          ctx.beginPath();
-          ctx.moveTo(PLAYER_SCREEN_X + p1.x, PLAYER_SCREEN_Y + p1.y + 100);
-          ctx.lineTo(PLAYER_SCREEN_X + p3.x, PLAYER_SCREEN_Y + p3.y + 100);
-          ctx.stroke();
-        }
-      }
-
-      // Draw stairs (3D isometric blocks)
+       // Draw stairs (3D isometric blocks) + FINISH BLOCK
       const stepsToShow = 10;
       const startIdx = Math.max(0, currentLetterIndex - 2);
-      const endIdx = Math.min(allLetters.length, currentLetterIndex + stepsToShow);
+      // Include finish block in range by adding 1 to allLetters.length
+      const endIdx = Math.min(allLetters.length + 1, currentLetterIndex + stepsToShow);
 
       // Draw from back to front for proper layering
       for (let i = endIdx - 1; i >= startIdx; i--) {
+        
+        // **FINISH BLOCK** - Treat as block at position allLetters.length
+        if (i === allLetters.length) {
+          const relativeIndex = i - currentLetterIndex;
+          const worldZ = -relativeIndex * 1.5; // Same spacing as regular blocks
+          const finishIso = toIso(0, 0, worldZ);
+          const finishX = PLAYER_SCREEN_X + finishIso.x;
+          const finishY = PLAYER_SCREEN_Y + finishIso.y;
+          
+          // Pulsing glow effect
+          const glowIntensity = Math.sin(Date.now() / 300) * 10 + 20;
+          ctx.shadowColor = '#9b59b6';
+          ctx.shadowBlur = glowIntensity;
+          
+          drawIsoBlock(ctx, finishX, finishY, TILE_WIDTH * 1.2, TILE_HEIGHT * 1.2, BLOCK_DEPTH, '#9b59b6', darkMode);
+          
+          ctx.shadowBlur = 0;
+          
+          // Victory flag on RIGHT CORNER
+          const flagX = finishX + (TILE_WIDTH * 1.1) / 2;
+          const flagY = finishY + (TILE_HEIGHT * 2) / 2;
+          
+          ctx.fillStyle = '#e74c3c';
+          ctx.beginPath();
+          ctx.fillRect(flagX - 2, flagY - 50, 4, 40);
+          ctx.moveTo(flagX, flagY - 50);
+          ctx.lineTo(flagX + 20, flagY - 42);
+          ctx.lineTo(flagX, flagY - 34);
+          ctx.closePath();
+          ctx.fill();
+          
+          // "FINISH" text
+          ctx.font = 'bold 16px Roboto';
+          ctx.fillStyle = '#000';
+          ctx.textAlign = 'center';
+          ctx.fillText('FINISH', finishX + 75, finishY + TILE_HEIGHT / 2 + 18);
+          
+          continue; // Skip to next block
+        }
+        
+        // **REGULAR LETTER BLOCKS** - existing code
         const letter = allLetters[i];
         const relativeIndex = i - currentLetterIndex;
         
-          
-      // Skip completed blocks that have finished falling (already removed from fallingBlocks)
-      if (i < currentLetterIndex && fallingBlocks[i] === undefined) {
-        continue; // Don't draw - block has fallen away permanently
-    }
+        // Skip completed blocks that have finished falling
+        if (i < currentLetterIndex && fallingBlocks[i] === undefined) {
+          continue;
+        }
         // 3D world position - stairs come TOWARD you as you progress
         const worldX = 0; // Always on center line
         const worldY = 0; // FIXED - player height never changes
@@ -348,7 +370,7 @@ function GameMode3D({ darkMode, paraLength }) {
         ctx.shadowBlur = 0;
         
         // Victory flag on RIGHT CORNER (top vertex of isometric block)
-        const flagX = finishX + (TILE_WIDTH * 1.2) / 2;
+        const flagX = finishX + (TILE_WIDTH * 1.1) / 2;
         const flagY = finishY + (TILE_HEIGHT * 2) / 2;
 
         
@@ -373,7 +395,7 @@ function GameMode3D({ darkMode, paraLength }) {
         // "FINISH" text
         ctx.font = 'bold 16px Roboto';
         ctx.fillStyle = '#000';
-        ctx.fillText('FINISH', finishX + 25, finishY + TILE_HEIGHT / 2 + 75);
+        ctx.fillText('FINISH', finishX + 75 , finishY + TILE_HEIGHT / 2 + 18);
       }
 
 
