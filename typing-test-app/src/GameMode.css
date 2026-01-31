@@ -173,35 +173,4 @@
     font-size: 1.1rem;
   }
 }
-.game-mode-toggle {
-  text-align: center;
-  margin: 0.5rem 0;
-}
-
-.game-mode-toggle label {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  font-size: 1rem;
-  padding: 0.5rem 1rem;
-  background: rgba(155, 89, 182, 0.1);
-  border-radius: 8px;
-  transition: all 0.3s;
-}
-
-.game-mode-toggle label:hover {
-  background: rgba(155, 89, 182, 0.2);
-}
-
-.game-mode-toggle input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
-  cursor: pointer;
-}
-
-.container.dark-mode .game-mode-toggle label {
-  background: rgba(155, 89, 182, 0.15);
-  color: #f1f1f1;
-}
 
