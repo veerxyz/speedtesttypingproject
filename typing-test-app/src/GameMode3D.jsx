@@ -21,12 +21,22 @@ function GameMode3D({ darkMode, paraLength }) {
   const intervalRef = useRef(null);
   const inputRef = useRef(null);
 
-  const wordsList = [
-    "hello", "world", "speed", "type", "fast", "game", "run", "jump",
-    "quick", "brown", "fox", "lazy", "dog", "code", "react", "build",
-    "learn", "practice", "skill", "master", "focus", "flow", "zone",
-    "power", "boost", "dash", "sprint", "race", "track", "path", "win"
-  ];
+ const wordsList = [
+  "hello", "world", "speed", "type", "fast", "game", "run", "jump",
+  "quick", "brown", "fox", "lazy", "dog", "code", "react", "build",
+  "learn", "practice", "skill", "master", "focus", "flow", "zone",
+  "power", "boost", "dash", "sprint", "race", "track", "path", "win",
+  "think", "create", "design", "develop", "deploy", "test", "debug",
+  "solve", "achieve", "grow", "improve", "excel", "succeed", "thrive",
+  "innovate", "explore", "discover", "advance", "progress", "evolve",
+  "optimize", "refactor", "implement", "execute", "deliver", "ship",
+  "launch", "scale", "iterate", "enhance", "upgrade", "transform",
+  "pioneer", "lead", "inspire", "motivate", "empower", "enable",
+  "accelerate", "streamline", "automate", "integrate", "connect", "sync",
+  "collaborate", "communicate", "share", "contribute", "support", "assist",
+  "guide", "teach", "mentor", "coach", "train", "educate", "enlighten"
+];
+
 
   // Constants
   const MIN_SPEED = 0.025;
