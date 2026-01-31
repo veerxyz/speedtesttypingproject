@@ -386,7 +386,7 @@ function GameMode3D({ darkMode, paraLength }) {
       const shadowAlpha = isJumping ? 0.1 : 0.2;
       ctx.fillStyle = `rgba(0, 0, 0, ${shadowAlpha})`;
       ctx.beginPath();
-      ctx.ellipse(PLAYER_SCREEN_X, PLAYER_SCREEN_Y + BLOCK_DEPTH -15, 15, 6, 0, 0, Math.PI * 2);
+      ctx.ellipse(PLAYER_SCREEN_X, PLAYER_SCREEN_Y + BLOCK_DEPTH +10, 15, 6, 0, 0, Math.PI * 2);
       ctx.fill();
 
       // Player body (isometric cube)
