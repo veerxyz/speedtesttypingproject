@@ -320,6 +320,64 @@ function GameMode3D({ darkMode, paraLength }) {
         ctx.globalAlpha = 1;
       }
 
+
+        // Draw finish/victory block when game is complete
+      if (currentLetterIndex >= allLetters.length) {
+        const finishIso = toIso(0, 0, 0);
+        const finishX = PLAYER_SCREEN_X + finishIso.x;
+        const finishY = PLAYER_SCREEN_Y + finishIso.y;
+        
+        // Victory platform - golden with special effects
+        const victoryGradient = ctx.createLinearGradient(
+          finishX - TILE_WIDTH / 2,
+          finishY,
+          finishX + TILE_WIDTH / 2,
+          finishY + BLOCK_DEPTH
+        );
+        victoryGradient.addColorStop(0, '#FFD700');    // ← TOP gradient color (gold)
+        victoryGradient.addColorStop(0.5, '#FFA500');  // ← MIDDLE gradient color (orange)
+        victoryGradient.addColorStop(1, '#FFD700');    // ← BOTTOM gradient color (gold)
+        
+        // Pulsing glow effect
+        const glowIntensity = Math.sin(Date.now() / 300) * 10 + 20;
+        ctx.shadowColor = '#FFD700';  // ← GLOW color (matches block)
+        ctx.shadowBlur = glowIntensity;
+        
+        drawIsoBlock(ctx, finishX, finishY, TILE_WIDTH * 1.2, TILE_HEIGHT * 1.2, BLOCK_DEPTH, '#9b59b6', darkMode);
+        
+        ctx.shadowBlur = 0;
+        
+        // Victory flag on RIGHT CORNER (top vertex of isometric block)
+        const flagX = finishX + (TILE_WIDTH * 1.2) / 2;
+        const flagY = finishY + (TILE_HEIGHT * 2) / 2;
+
+        
+        ctx.fillStyle = '#e74c3c';
+        ctx.beginPath();
+        // Flag pole
+        ctx.fillRect(flagX - 2, flagY - 50, 4, 40);
+        // Flag
+        ctx.moveTo(flagX, flagY - 50);
+        ctx.lineTo(flagX + 20, flagY - 42);
+        ctx.lineTo(flagX, flagY - 34);
+        ctx.closePath();
+        ctx.fill();
+        
+        // // Victory star on center of block
+        // ctx.fillStyle = '#fff';
+        // ctx.font = 'bold 28px Arial';
+        // ctx.textAlign = 'center';
+        // ctx.textBaseline = 'middle';
+        // ctx.fillText('★', finishX, finishY + TILE_HEIGHT / 2 + 8);
+        
+        // "FINISH" text
+        ctx.font = 'bold 16px Roboto';
+        ctx.fillStyle = '#000';
+        ctx.fillText('FINISH', finishX + 25, finishY + TILE_HEIGHT / 2 + 75);
+      }
+
+
+
       // Draw player - COMPLETELY FIXED POSITION, only jumps
       const jumpOffset = isJumping ? getJumpOffset(jumpProgress) : 0;
       const playerY = PLAYER_SCREEN_Y - jumpOffset;
@@ -328,7 +386,7 @@ function GameMode3D({ darkMode, paraLength }) {
       const shadowAlpha = isJumping ? 0.1 : 0.2;
       ctx.fillStyle = `rgba(0, 0, 0, ${shadowAlpha})`;
       ctx.beginPath();
-      ctx.ellipse(PLAYER_SCREEN_X, PLAYER_SCREEN_Y + BLOCK_DEPTH, 15, 6, 0, 0, Math.PI * 2);
+      ctx.ellipse(PLAYER_SCREEN_X, PLAYER_SCREEN_Y + BLOCK_DEPTH -15, 15, 6, 0, 0, Math.PI * 2);
       ctx.fill();
 
       // Player body (isometric cube)
