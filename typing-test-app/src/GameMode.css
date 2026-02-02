@@ -130,7 +130,7 @@
 .game-controls button {
   padding: 1rem 2.5rem;
   font-size: 1.1rem;
-  background-color: #3498db;
+  background-color: #9834db;
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -140,7 +140,7 @@
 }
 
 .game-controls button:hover {
-  background-color: #2980b9;
+  background-color: #8b2fc8;
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
