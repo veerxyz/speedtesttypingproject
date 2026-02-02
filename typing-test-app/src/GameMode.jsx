@@ -455,7 +455,7 @@ Mistakes: ${mistakes}
   return (
     <div className="game-mode">
       <div className="game-instructions">
-        <p>🎮 Type to climb! Runner stays centered, stairs scroll beneath! 🏃‍♂️⬆️</p>
+        <p>Liking it? Thank you! ❤️ </p>
       </div>
       
       <canvas 

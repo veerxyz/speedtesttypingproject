@@ -655,7 +655,7 @@ Mistakes: ${mistakes}
   return (
     <div className="game-mode">
       <div className="game-instructions">
-        <p>🎮 Climb in 3D! Type letters to make blocks fall and ascend the tower! 🏗️⬇️</p>
+        <p>Liking it? Thank you! ❤️ </p>
       </div>
       
       <canvas 

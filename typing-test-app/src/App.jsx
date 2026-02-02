@@ -288,9 +288,9 @@ function App() {
           value={mode}
           onChange={(e) => setMode(e.target.value)}
         >
-          <option value="classic">Classic Test</option>
+          <option value="classic">Old Test</option>
           <option value="game">2D Stairs</option>
-          <option value="game3d">3D Isometric</option>
+          <option value="game3d">3D Blocks</option>
         </select>
 
         <label htmlFor="word-type">Word Type:</label>
@@ -385,7 +385,7 @@ function App() {
           .
         </p>
         <p className="text-sm text-gray-400 mt-1">
-          If it helps you, please consider supporting this project with{" "}
+          If it helps you, please consider supporting the development of this project with{" "}
           <a
             href="https://www.patreon.com/theindiecompny"
             target="_blank"

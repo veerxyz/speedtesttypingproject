@@ -43,7 +43,7 @@
   width: 100%;
   padding: 0.8rem;
   font-size: 1rem;
-  border: 2px solid #28a745;
+  border: 2px solid #e7de26;
   border-radius: 8px;
   text-align: center;
   box-sizing: border-box;
@@ -52,15 +52,15 @@
 
 .game-input-hidden:focus {
   outline: none;
-  border-color: #1e7e34;
+  border-color: #ebff12;
   box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.25);
   background: rgba(40, 167, 69, 0.1);
 }
 
 .container.dark-mode .game-input-hidden {
-  background: rgba(40, 167, 69, 0.1);
+  background: rgba(194, 236, 25, 0.1);
   color: #f1f1f1;
-  border-color: #28a745;
+  border-color: #d7f01b;
 }
 
 .game-hint {
