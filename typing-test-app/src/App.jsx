@@ -374,7 +374,7 @@ function App() {
             height="24"
             style={{ verticalAlign: "middle", marginRight: "8px" }}
           />
-          Practice a bit, with a single click, using this{" "}
+          Daily Practice a bit, with a single Click, using this{" "}
           <a
             href="https://chromewebstore.google.com/detail/speed-test-your-typing-sp/jcaljndpimijemjaajnopmaogncojajo"
             target="_blank"
@@ -394,7 +394,7 @@ function App() {
           >
             $1
           </a>
-          .
+          .🏗️
         </p>
       </footer>
 
