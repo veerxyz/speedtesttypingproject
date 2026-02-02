@@ -888,7 +888,18 @@ Mistakes: ${mistakes}
   return (
     <div className="game-mode">
       <div className="game-instructions">
-        <p>Liking it? Thank you! ❤️ </p>
+        <p>Liking it? Thank you! ❤️ 
+            Please rate it, if you can: {" "}
+          <a
+            href="https://chromewebstore.google.com/detail/speed-test-your-typing-sp/jcaljndpimijemjaajnopmaogncojajo"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            link
+          </a>
+          .
+        </p>
+        
       </div>
 
       <canvas
