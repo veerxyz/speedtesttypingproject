@@ -14,25 +14,29 @@ function GameMode({ darkMode, paraLength, wordType }) {
   const [isJumping, setIsJumping] = useState(false);
   const [jumpProgress, setJumpProgress] = useState(0);
   
+  const [showShare, setShowShare] = useState(false);
+  
   const animationRef = useRef(null);
   const intervalRef = useRef(null);
   const inputRef = useRef(null);
 
- const wordsList = [
-  "hello", "world", "speed", "type", "fast", "game", "run", "jump",
-  "quick", "brown", "fox", "lazy", "dog", "code", "react", "build",
-  "learn", "practice", "skill", "master", "focus", "flow", "zone",
-  "power", "boost", "dash", "sprint", "race", "track", "path", "win",
-  "think", "create", "design", "develop", "deploy", "test", "debug",
-  "solve", "achieve", "grow", "improve", "excel", "succeed", "thrive",
-  "innovate", "explore", "discover", "advance", "progress", "evolve",
-  "optimize", "refactor", "implement", "execute", "deliver", "ship",
-  "launch", "scale", "iterate", "enhance", "upgrade", "transform",
-  "pioneer", "lead", "inspire", "motivate", "empower", "enable",
-  "accelerate", "streamline", "automate", "integrate", "connect", "sync",
-  "collaborate", "communicate", "share", "contribute", "support", "assist",
-  "guide", "teach", "mentor", "coach", "train", "educate", "enlighten"
-];
+  
+  const wordsList = [
+    "hello", "world", "speed", "type", "fast", "game", "run", "jump",
+    "quick", "brown", "fox", "lazy", "dog", "code", "react", "build",
+    "learn", "practice", "skill", "master", "focus", "flow", "zone",
+    "power", "boost", "dash", "sprint", "race", "track", "path", "win",
+    "think", "create", "design", "develop", "deploy", "test", "debug",
+    "solve", "achieve", "grow", "improve", "excel", "succeed", "thrive",
+    "innovate", "explore", "discover", "advance", "progress", "evolve",
+    "optimize", "refactor", "implement", "execute", "deliver", "ship",
+    "launch", "scale", "iterate", "enhance", "upgrade", "transform",
+    "pioneer", "lead", "inspire", "motivate", "empower", "enable",
+    "accelerate", "streamline", "automate", "integrate", "connect", "sync",
+    "collaborate", "communicate", "share", "contribute", "support", "assist",
+    "guide", "teach", "mentor", "coach", "train", "educate", "enlighten"
+  ];
+
 
   // Constants
   const MIN_SPEED = 0.025;
@@ -367,6 +371,7 @@ function GameMode({ darkMode, paraLength, wordType }) {
     setMistakes(0);
     setCorrectLetters(0);
     setTimeElapsed(0);
+    setShowShare(false);
     
     const count = getWordCount();
     
@@ -414,6 +419,36 @@ function GameMode({ darkMode, paraLength, wordType }) {
   const isGameOver = currentLetterIndex >= allLetters.length && allLetters.length > 0;
   const wordCount = allLetters.filter(l => l.isWordEnd).length;
   const completedWords = allLetters.slice(0, currentLetterIndex).filter(l => l.isWordEnd).length;
+  const wpm = timeElapsed > 0 ? Math.round((completedWords / timeElapsed) * 60) : 0;
+
+const getShareText = () => {
+  const wordTypeText = wordType === 'random' ? 'Random Letters' : 'Words';
+  
+  if (wordType === 'random') {
+    return `⌨️ My 2D Stair Typing Game Results!
+🚀 Can you beat my score?
+
+Letters: ${correctLetters}/${allLetters.length}
+Time: ${timeElapsed}s
+WPM: ${wpm}
+Mode: ${wordTypeText}
+Mistakes: ${mistakes}
+----------
+⌨️ #speedtestyourtyping via speedtesttyping.net`;
+  } else {
+    return `⌨️ My 2D Stair Typing Game Results!
+🚀 Can you beat my score?
+
+Words: ${completedWords}/${wordCount}
+Letters: ${correctLetters}/${allLetters.length}
+Time: ${timeElapsed}s
+WPM: ${wpm}
+Mode: ${wordTypeText}
+Mistakes: ${mistakes}
+----------
+⌨️ #speedtestyourtyping via speedtesttyping.net`;
+  }
+};
 
   return (
     <div className="game-mode">
@@ -453,13 +488,57 @@ function GameMode({ darkMode, paraLength, wordType }) {
         <p>Letters: <span>{correctLetters}/{allLetters.length}</span></p>
         <p>Mistakes: <span>{mistakes}</span></p>
         <p>Time: <span>{timeElapsed}s</span></p>
-        <p>WPM: <span>{timeElapsed > 0 ? Math.round((completedWords / timeElapsed) * 60) : 0}</span></p>
+        <p>WPM: <span>{wpm}</span></p>
       </div>
 
       <div className="game-controls">
-        <button onClick={resetGame}>New Climb</button>
-        {isGameOver && <p className="game-over">🏆 You're a Champion! 🏆</p>}
+        <button onClick={resetGame}>New Game</button>
+        {isGameOver && (
+          <>
+            <button className="share-btn" onClick={() => setShowShare(true)}>Share Results</button>
+            <p className="game-over">🏆 You're a Champion! 🏆</p>
+          </>
+        )}
       </div>
+
+      {showShare && (
+        <div className="share-panel">
+          <h2>Share Your Results!</h2>
+          <p>Spread the word about your typing skills! 🚀</p>
+          <textarea
+            readOnly
+            value={getShareText()}
+          />
+          <div className="share-buttons">
+            <a
+              className="tweet-btn"
+              href={`https://x.com/intent/tweet?text=${encodeURIComponent(getShareText())}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Share on X
+            </a>
+            <a
+              className="threads-btn"
+              href={`https://www.threads.net/intent/post?text=${encodeURIComponent(getShareText())}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Share on Threads
+            </a>
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(getShareText());
+                alert('Copied to clipboard!');
+              }}
+            >
+              Copy Text
+            </button>
+            <button onClick={() => setShowShare(false)}>Close</button>
+          </div>
+          <p>Practice makes perfect! Keep climbing! 🎯</p>
+        </div>
+      )}
     </div>
   );
 }

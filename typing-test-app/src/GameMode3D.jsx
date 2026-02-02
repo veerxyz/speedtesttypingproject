@@ -565,10 +565,38 @@ function GameMode3D({ darkMode, paraLength, wordType }) {
   const completedWords = allLetters.slice(0, currentLetterIndex).filter(l => l.isWordEnd).length;
   const wpm = timeElapsed > 0 ? Math.round((completedWords / timeElapsed) * 60) : 0;
 
-  const getShareText = () => {
-    const wordTypeText = wordType === 'random' ? 'Random Letters' : 'Words';
-    return `⌨️ My 3D Speed Typing Game Results!
+//   const getShareText = () => {
+//     const wordTypeText = wordType === 'random' ? 'Random Letters' : 'Words';
+//     return `⌨️ My 3D Speed Typing Game Results!
   
+// 🚀 Can you beat my score?
+
+// Words: ${completedWords}/${wordCount}
+// Letters: ${correctLetters}/${allLetters.length}
+// Time: ${timeElapsed}s
+// WPM: ${wpm}
+// Mode: ${wordTypeText}
+// Mistakes: ${mistakes}
+
+// ----------
+// ⌨️ #speedtestyourtyping via speedtesttyping.net`;
+//   };
+const getShareText = () => {
+  const wordTypeText = wordType === 'random' ? 'Random Letters' : 'Words';
+  
+  if (wordType === 'random') {
+    return `⌨️ My 3D Speed Typing Game Results!
+🚀 Can you beat my score?
+
+Letters: ${correctLetters}/${allLetters.length}
+Time: ${timeElapsed}s
+WPM: ${wpm}
+Mode: ${wordTypeText}
+Mistakes: ${mistakes}
+----------
+⌨️ #speedtestyourtyping via speedtesttyping.net`;
+  } else {
+    return `⌨️ My 3D Speed Typing Game Results!
 🚀 Can you beat my score?
 
 Words: ${completedWords}/${wordCount}
@@ -577,10 +605,10 @@ Time: ${timeElapsed}s
 WPM: ${wpm}
 Mode: ${wordTypeText}
 Mistakes: ${mistakes}
-
 ----------
 ⌨️ #speedtestyourtyping via speedtesttyping.net`;
-  };
+  }
+};
 
   return (
     <div className="game-mode">
@@ -624,7 +652,7 @@ Mistakes: ${mistakes}
       </div>
 
       <div className="game-controls">
-        <button onClick={resetGame}>New Tower</button>
+        <button onClick={resetGame}>New Game</button>
         {isGameOver && (
           <>
             <button className="share-btn" onClick={() => setShowShare(true)}>Share Results</button>
