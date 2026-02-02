@@ -21,6 +21,9 @@ function GameMode3D({ darkMode, paraLength, wordType }) {
   const animationRef = useRef(null);
   const intervalRef = useRef(null);
   const inputRef = useRef(null);
+  const correctSoundRef = useRef(null);
+  const wrongSoundRef = useRef(null);
+  const audioContextRef = useRef(null);
 
   const wordsList = [
     "hello", "world", "speed", "type", "fast", "game", "run", "jump",
@@ -182,6 +185,58 @@ function GameMode3D({ darkMode, paraLength, wordType }) {
     const g = Math.max(0, Math.min(255, parseInt(hex.slice(2, 4), 16) + amount));
     const b = Math.max(0, Math.min(255, parseInt(hex.slice(4, 6), 16) + amount));
     return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+  };
+
+  // Initialize AudioContext once
+  useEffect(() => {
+    audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)();
+    
+    return () => {
+      if (audioContextRef.current) {
+        audioContextRef.current.close();
+      }
+    };
+  }, []);
+
+  // Sound effects using shared Web Audio API context
+  const playCorrectSound = () => {
+    if (!audioContextRef.current) return;
+    
+    const audioContext = audioContextRef.current;
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.value = 800;
+    oscillator.type = 'sine';
+    
+    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.1);
+  };
+
+  const playWrongSound = () => {
+    if (!audioContextRef.current) return;
+    
+    const audioContext = audioContextRef.current;
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    
+    oscillator.frequency.value = 200;
+    oscillator.type = 'sawtooth';
+    
+    gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+    
+    oscillator.start(audioContext.currentTime);
+    oscillator.stop(audioContext.currentTime + 0.2);
   };
 
   useEffect(() => {
@@ -457,6 +512,7 @@ function GameMode3D({ darkMode, paraLength, wordType }) {
 
     if (currentLetter.isSpace) {
       if (e.key === ' ') {
+        playCorrectSound();
         setIsJumping(true);
         setJumpProgress(0);
         setFallingBlocks(prev => ({ ...prev, [currentLetterIndex]: 0 }));
@@ -464,6 +520,7 @@ function GameMode3D({ darkMode, paraLength, wordType }) {
         setPlayerSpeed(prev => Math.min(prev + SPEED_INCREMENT, MAX_SPEED));
         setCorrectLetters(prev => prev + 1);
       } else {
+        playWrongSound();
         setPlayerSpeed(MIN_SPEED);
         setMistakes(prev => prev + 1);
       }
@@ -471,6 +528,7 @@ function GameMode3D({ darkMode, paraLength, wordType }) {
     }
 
     if (typedChar === currentLetter.char.toLowerCase()) {
+      playCorrectSound();
       setIsJumping(true);
       setJumpProgress(0);
       setFallingBlocks(prev => ({ ...prev, [currentLetterIndex]: 0 }));
@@ -482,6 +540,7 @@ function GameMode3D({ darkMode, paraLength, wordType }) {
         endGame();
       }
     } else {
+      playWrongSound();
       setPlayerSpeed(MIN_SPEED);
       setMistakes(prev => prev + 1);
     }
@@ -565,38 +624,21 @@ function GameMode3D({ darkMode, paraLength, wordType }) {
   const completedWords = allLetters.slice(0, currentLetterIndex).filter(l => l.isWordEnd).length;
   const wpm = timeElapsed > 0 ? Math.round((completedWords / timeElapsed) * 60) : 0;
 
-//   const getShareText = () => {
-//     const wordTypeText = wordType === 'random' ? 'Random Letters' : 'Words';
-//     return `⌨️ My 3D Speed Typing Game Results!
-  
-// 🚀 Can you beat my score?
-
-// Words: ${completedWords}/${wordCount}
-// Letters: ${correctLetters}/${allLetters.length}
-// Time: ${timeElapsed}s
-// WPM: ${wpm}
-// Mode: ${wordTypeText}
-// Mistakes: ${mistakes}
-
-// ----------
-// ⌨️ #speedtestyourtyping via speedtesttyping.net`;
-//   };
-const getShareText = () => {
-  const wordTypeText = wordType === 'random' ? 'Random Letters' : 'Words';
-  
-  if (wordType === 'random') {
-    return `⌨️ My 3D Speed Typing Game Results!
+  const getShareText = () => {
+    const wordTypeText = wordType === 'random' ? 'Random Letters' : 'Words';
+    
+    if (wordType === 'random') {
+      return `⌨️ My 3D Speed Typing Game Results!
 🚀 Can you beat my score?
 
 Letters: ${correctLetters}/${allLetters.length}
 Time: ${timeElapsed}s
-WPM: ${wpm}
 Mode: ${wordTypeText}
 Mistakes: ${mistakes}
 ----------
 ⌨️ #speedtestyourtyping via speedtesttyping.net`;
-  } else {
-    return `⌨️ My 3D Speed Typing Game Results!
+    } else {
+      return `⌨️ My 3D Speed Typing Game Results!
 🚀 Can you beat my score?
 
 Words: ${completedWords}/${wordCount}
@@ -607,8 +649,8 @@ Mode: ${wordTypeText}
 Mistakes: ${mistakes}
 ----------
 ⌨️ #speedtestyourtyping via speedtesttyping.net`;
-  }
-};
+    }
+  };
 
   return (
     <div className="game-mode">

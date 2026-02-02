@@ -430,7 +430,6 @@ const getShareText = () => {
 
 Letters: ${correctLetters}/${allLetters.length}
 Time: ${timeElapsed}s
-WPM: ${wpm}
 Mode: ${wordTypeText}
 Mistakes: ${mistakes}
 ----------
