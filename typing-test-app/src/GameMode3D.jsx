@@ -14,51 +14,38 @@ function GameMode3D({ darkMode, paraLength, wordType }) {
   const [isJumping, setIsJumping] = useState(false);
   const [jumpProgress, setJumpProgress] = useState(0);
   
-  // Track falling blocks with their fall progress
   const [fallingBlocks, setFallingBlocks] = useState({});
+  
+  const [showShare, setShowShare] = useState(false);
   
   const animationRef = useRef(null);
   const intervalRef = useRef(null);
   const inputRef = useRef(null);
 
- const wordsList = [
-  "hello", "world", "speed", "type", "fast", "game", "run", "jump",
-  "quick", "brown", "fox", "lazy", "dog", "code", "react", "build",
-  "learn", "practice", "skill", "master", "focus", "flow", "zone",
-  "power", "boost", "dash", "sprint", "race", "track", "path", "win",
-  "think", "create", "design", "develop", "deploy", "test", "debug",
-  "solve", "achieve", "grow", "improve", "excel", "succeed", "thrive",
-  "innovate", "explore", "discover", "advance", "progress", "evolve",
-  "optimize", "refactor", "implement", "execute", "deliver", "ship",
-  "launch", "scale", "iterate", "enhance", "upgrade", "transform",
-  "pioneer", "lead", "inspire", "motivate", "empower", "enable",
-  "accelerate", "streamline", "automate", "integrate", "connect", "sync",
-  "collaborate", "communicate", "share", "contribute", "support", "assist",
-  "guide", "teach", "mentor", "coach", "train", "educate", "enlighten"
-];
+  const wordsList = [
+    "hello", "world", "speed", "type", "fast", "game", "run", "jump",
+    "quick", "brown", "fox", "lazy", "dog", "code", "react", "build",
+    "learn", "practice", "skill", "master", "focus", "flow", "zone",
+    "power", "boost", "dash", "sprint", "race", "track", "path", "win",
+    "think", "create", "design", "develop", "deploy", "test", "debug",
+    "solve", "achieve", "grow", "improve", "excel", "succeed", "thrive",
+    "innovate", "explore", "discover", "advance", "progress", "evolve",
+    "optimize", "refactor", "implement", "execute", "deliver", "ship",
+    "launch", "scale", "iterate", "enhance", "upgrade", "transform",
+    "pioneer", "lead", "inspire", "motivate", "empower", "enable",
+    "accelerate", "streamline", "automate", "integrate", "connect", "sync",
+    "collaborate", "communicate", "share", "contribute", "support", "assist",
+    "guide", "teach", "mentor", "coach", "train", "educate", "enlighten"
+  ];
 
- const generateRandomLetters = (count) => {
-  const letters = 'abcdefghijklmnopqrstuvwxyz';
-  let result = '';
-  
-  for (let i = 0; i < count * 5; i++) {
-    result += letters[Math.floor(Math.random() * letters.length)];
-    if (i > 0 && Math.random() < 0.15) {
-      result += ' ';
-    }
-  }
-  return result.trim().split('');
-};
-  // Constants
   const MIN_SPEED = 0.025;
   const MAX_SPEED = 0.25;
   const SPEED_INCREMENT = 0.01;
   
-  // Isometric tile dimensions
   const TILE_WIDTH = 50;
   const TILE_HEIGHT = 25;
   const BLOCK_DEPTH = 30;
-  const FALL_SPEED = 3; // Pixels per frame
+  const FALL_SPEED = 3;
 
   const getWordCount = () => {
     switch (paraLength) {
@@ -69,9 +56,6 @@ function GameMode3D({ darkMode, paraLength, wordType }) {
     }
   };
 
- 
-
-  // Isometric projection: convert 3D world coords to 2D screen coords
   const toIso = (x, y, z) => {
     return {
       x: (x - z) * TILE_WIDTH / 2,
@@ -79,52 +63,62 @@ function GameMode3D({ darkMode, paraLength, wordType }) {
     };
   };
 
-  // Generate letter sequence
-  useEffect(() => {
-  const count = getWordCount();
-  
-  if (wordType === 'random') {
-    const randomChars = generateRandomLetters(count);
-    const letters = randomChars.map((char) => ({
-      char: char,
-      wordIndex: 0,
-      isWordStart: false,
-      isWordEnd: false,
-      isSpace: char === ' '
-    }));
-    setAllLetters(letters);
-  } else {
-    const words = [];
-    for (let i = 0; i < count; i++) {
-      words.push(wordsList[Math.floor(Math.random() * wordsList.length)]);
-    }
+  const generateRandomLetters = (count) => {
+    const letters = 'abcdefghijklmnopqrstuvwxyz';
+    let result = '';
     
-    const letters = [];
-    words.forEach((word, wordIdx) => {
-      word.split('').forEach((char, charIdx) => {
-        letters.push({
-          char: char,
-          wordIndex: wordIdx,
-          isWordStart: charIdx === 0,
-          isWordEnd: charIdx === word.length - 1
-        });
-      });
-      if (wordIdx < words.length - 1) {
-        letters.push({
-          char: ' ',
-          wordIndex: wordIdx,
-          isSpace: true
-        });
+    for (let i = 0; i < count * 5; i++) {
+      result += letters[Math.floor(Math.random() * letters.length)];
+      if (i > 0 && Math.random() < 0.15) {
+        result += ' ';
       }
-    });
+    }
+    return result.trim().split('');
+  };
+
+  useEffect(() => {
+    const count = getWordCount();
     
-    setAllLetters(letters);
-  }
-// eslint-disable-next-line react-hooks/exhaustive-deps
-}, [paraLength, wordType]);
+    if (wordType === 'random') {
+      const randomChars = generateRandomLetters(count);
+      const letters = randomChars.map((char) => ({
+        char: char,
+        wordIndex: 0,
+        isWordStart: false,
+        isWordEnd: false,
+        isSpace: char === ' '
+      }));
+      setAllLetters(letters);
+    } else {
+      const words = [];
+      for (let i = 0; i < count; i++) {
+        words.push(wordsList[Math.floor(Math.random() * wordsList.length)]);
+      }
+      
+      const letters = [];
+      words.forEach((word, wordIdx) => {
+        word.split('').forEach((char, charIdx) => {
+          letters.push({
+            char: char,
+            wordIndex: wordIdx,
+            isWordStart: charIdx === 0,
+            isWordEnd: charIdx === word.length - 1
+          });
+        });
+        if (wordIdx < words.length - 1) {
+          letters.push({
+            char: ' ',
+            wordIndex: wordIdx,
+            isSpace: true
+          });
+        }
+      });
+      
+      setAllLetters(letters);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paraLength, wordType]);
 
-
-  // Game timer
   useEffect(() => {
     if (isPlaying) {
       intervalRef.current = setInterval(() => {
@@ -142,14 +136,11 @@ function GameMode3D({ darkMode, paraLength, wordType }) {
     return 'Sprinting!';
   }, []);
 
-  // Jump animation
   const getJumpOffset = (progress) => {
     return Math.sin(progress * Math.PI) * 40;
   };
 
-  // Draw isometric block (3D cube)
   const drawIsoBlock = (ctx, screenX, screenY, width, height, depth, color, darkMode) => {
-    // Top face
     ctx.fillStyle = color;
     ctx.beginPath();
     ctx.moveTo(screenX, screenY);
@@ -162,7 +153,6 @@ function GameMode3D({ darkMode, paraLength, wordType }) {
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    // Left face (darker)
     const leftColor = adjustBrightness(color, -20);
     ctx.fillStyle = leftColor;
     ctx.beginPath();
@@ -174,7 +164,6 @@ function GameMode3D({ darkMode, paraLength, wordType }) {
     ctx.fill();
     ctx.stroke();
 
-    // Right face (darkest)
     const rightColor = adjustBrightness(color, -40);
     ctx.fillStyle = rightColor;
     ctx.beginPath();
@@ -187,7 +176,6 @@ function GameMode3D({ darkMode, paraLength, wordType }) {
     ctx.stroke();
   };
 
-  // Adjust color brightness
   const adjustBrightness = (color, amount) => {
     const hex = color.replace('#', '');
     const r = Math.max(0, Math.min(255, parseInt(hex.slice(0, 2), 16) + amount));
@@ -196,7 +184,6 @@ function GameMode3D({ darkMode, paraLength, wordType }) {
     return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
   };
 
-  // Main animation loop
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas || allLetters.length === 0) return;
@@ -205,12 +192,10 @@ function GameMode3D({ darkMode, paraLength, wordType }) {
     const CANVAS_WIDTH = canvas.width;
     const CANVAS_HEIGHT = canvas.height;
     
-    // FIXED player position on screen - NEVER CHANGES
     const PLAYER_SCREEN_X = CANVAS_WIDTH / 2;
     const PLAYER_SCREEN_Y = CANVAS_HEIGHT / 2 + 50;
 
     const animate = () => {
-      // Update jump animation
       if (isJumping) {
         setJumpProgress(prev => {
           const newProgress = prev + 0.08;
@@ -222,17 +207,14 @@ function GameMode3D({ darkMode, paraLength, wordType }) {
         });
       }
 
-      // Update falling blocks animation
       setFallingBlocks(prev => {
         const updated = { ...prev };
         let hasChanges = false;
         
         Object.keys(updated).forEach(key => {
-        //   const blockIndex = parseInt(key);
           updated[key] += FALL_SPEED;
           hasChanges = true;
           
-          // Remove blocks that have fallen off screen
           if (updated[key] > 500) {
             delete updated[key];
           }
@@ -241,34 +223,25 @@ function GameMode3D({ darkMode, paraLength, wordType }) {
         return hasChanges ? updated : prev;
       });
 
-      // Clear canvas
       ctx.fillStyle = darkMode ? '#1a1a1a' : '#e6ecf0';
       ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-      // Draw grid floor (isometric) - moves with camera
       ctx.strokeStyle = darkMode ? '#2a2a2a' : '#d0d0d0';
       ctx.lineWidth = 1;
-      
-     
-      
-       // Draw stairs (3D isometric blocks) + FINISH BLOCK
+
       const stepsToShow = 10;
       const startIdx = Math.max(0, currentLetterIndex - 2);
-      // Include finish block in range by adding 1 to allLetters.length
       const endIdx = Math.min(allLetters.length + 1, currentLetterIndex + stepsToShow);
 
-      // Draw from back to front for proper layering
       for (let i = endIdx - 1; i >= startIdx; i--) {
         
-        // **FINISH BLOCK** - Treat as block at position allLetters.length
         if (i === allLetters.length) {
           const relativeIndex = i - currentLetterIndex;
-          const worldZ = -relativeIndex * 1.5; // Same spacing as regular blocks
+          const worldZ = -relativeIndex * 1.5;
           const finishIso = toIso(0, 0, worldZ);
           const finishX = PLAYER_SCREEN_X + finishIso.x;
           const finishY = PLAYER_SCREEN_Y + finishIso.y;
           
-          // Pulsing glow effect
           const glowIntensity = Math.sin(Date.now() / 300) * 10 + 20;
           ctx.shadowColor = '#9b59b6';
           ctx.shadowBlur = glowIntensity;
@@ -277,7 +250,6 @@ function GameMode3D({ darkMode, paraLength, wordType }) {
           
           ctx.shadowBlur = 0;
           
-          // Victory flag on RIGHT CORNER
           const flagX = finishX + (TILE_WIDTH * 1.1) / 2;
           const flagY = finishY + (TILE_HEIGHT * 2) / 2;
           
@@ -290,46 +262,37 @@ function GameMode3D({ darkMode, paraLength, wordType }) {
           ctx.closePath();
           ctx.fill();
           
-          // "FINISH" text
           ctx.font = 'bold 16px Roboto';
           ctx.fillStyle = '#000';
           ctx.textAlign = 'center';
           ctx.fillText('FINISH', finishX + 75, finishY + TILE_HEIGHT / 2 + 18);
           
-          continue; // Skip to next block
+          continue;
         }
         
-        // **REGULAR LETTER BLOCKS** - existing code
         const letter = allLetters[i];
         const relativeIndex = i - currentLetterIndex;
         
-        // Skip completed blocks that have finished falling
         if (i < currentLetterIndex && fallingBlocks[i] === undefined) {
           continue;
         }
-        // 3D world position - stairs come TOWARD you as you progress
-        const worldX = 0; // Always on center line
-        const worldY = 0; // FIXED - player height never changes
-        const worldZ = -relativeIndex * 1.5; // Steps come from distance
+
+        const worldX = 0;
+        const worldY = 0;
+        const worldZ = -relativeIndex * 1.5;
         
-        // Convert to isometric screen position
         const iso = toIso(worldX, worldY, worldZ);
         let screenX = PLAYER_SCREEN_X + iso.x;
         let screenY = PLAYER_SCREEN_Y + iso.y;
 
-        // Apply falling animation if block is completed
         if (i < currentLetterIndex && fallingBlocks[i] !== undefined) {
-          screenY += fallingBlocks[i]; // Fall down
-          
-          // Fade out as it falls
+          screenY += fallingBlocks[i];
           const fadeProgress = Math.min(fallingBlocks[i] / 300, 1);
           ctx.globalAlpha = 1 - fadeProgress;
         }
 
-        // Block color based on state
         let blockColor;
         if (letter.isSpace) {
-          // Space - draw outline only
           ctx.strokeStyle = darkMode ? '#555' : '#aaa';
           ctx.lineWidth = 2;
           ctx.setLineDash([4, 4]);
@@ -346,7 +309,6 @@ function GameMode3D({ darkMode, paraLength, wordType }) {
           ctx.stroke();
           ctx.setLineDash([]);
           
-          // Space symbol
           ctx.font = '14px Roboto';
           ctx.fillStyle = darkMode ? '#666' : '#999';
           ctx.textAlign = 'center';
@@ -357,7 +319,6 @@ function GameMode3D({ darkMode, paraLength, wordType }) {
             blockColor = darkMode ? '#2d5f3f' : '#90d990';
           } else if (i === currentLetterIndex) {
             blockColor = '#ffd700';
-            // Glow effect
             ctx.shadowColor = '#ffd700';
             ctx.shadowBlur = 20;
           } else {
@@ -367,7 +328,6 @@ function GameMode3D({ darkMode, paraLength, wordType }) {
           drawIsoBlock(ctx, screenX, screenY, TILE_WIDTH, TILE_HEIGHT, BLOCK_DEPTH, blockColor, darkMode);
           ctx.shadowBlur = 0;
           
-          // Draw letter on top face
           ctx.font = i === currentLetterIndex ? 'bold 24px Roboto' : 'bold 18px Roboto';
           ctx.fillStyle = i === currentLetterIndex ? '#000' : (darkMode ? '#f0f0f0' : '#222');
           ctx.textAlign = 'center';
@@ -375,85 +335,52 @@ function GameMode3D({ darkMode, paraLength, wordType }) {
           ctx.fillText(letter.char.toUpperCase(), screenX, screenY + TILE_HEIGHT / 2);
         }
 
-        // Reset alpha
         ctx.globalAlpha = 1;
       }
 
-
-        // Draw finish/victory block when game is complete
       if (currentLetterIndex >= allLetters.length) {
         const finishIso = toIso(0, 0, 0);
         const finishX = PLAYER_SCREEN_X + finishIso.x;
         const finishY = PLAYER_SCREEN_Y + finishIso.y;
         
-        // Victory platform - golden with special effects
-        const victoryGradient = ctx.createLinearGradient(
-          finishX - TILE_WIDTH / 2,
-          finishY,
-          finishX + TILE_WIDTH / 2,
-          finishY + BLOCK_DEPTH
-        );
-        victoryGradient.addColorStop(0, '#FFD700');    // ← TOP gradient color (gold)
-        victoryGradient.addColorStop(0.5, '#FFA500');  // ← MIDDLE gradient color (orange)
-        victoryGradient.addColorStop(1, '#FFD700');    // ← BOTTOM gradient color (gold)
-        
-        // Pulsing glow effect
         const glowIntensity = Math.sin(Date.now() / 300) * 10 + 20;
-        ctx.shadowColor = '#FFD700';  // ← GLOW color (matches block)
+        ctx.shadowColor = '#FFD700';
         ctx.shadowBlur = glowIntensity;
         
         drawIsoBlock(ctx, finishX, finishY, TILE_WIDTH * 1.2, TILE_HEIGHT * 1.2, BLOCK_DEPTH, '#9b59b6', darkMode);
         
         ctx.shadowBlur = 0;
         
-        // Victory flag on RIGHT CORNER (top vertex of isometric block)
         const flagX = finishX + (TILE_WIDTH * 1.1) / 2;
         const flagY = finishY + (TILE_HEIGHT * 2) / 2;
-
         
         ctx.fillStyle = '#e74c3c';
         ctx.beginPath();
-        // Flag pole
         ctx.fillRect(flagX - 2, flagY - 50, 4, 40);
-        // Flag
         ctx.moveTo(flagX, flagY - 50);
         ctx.lineTo(flagX + 20, flagY - 42);
         ctx.lineTo(flagX, flagY - 34);
         ctx.closePath();
         ctx.fill();
         
-        // // Victory star on center of block
-        // ctx.fillStyle = '#fff';
-        // ctx.font = 'bold 28px Arial';
-        // ctx.textAlign = 'center';
-        // ctx.textBaseline = 'middle';
-        // ctx.fillText('★', finishX, finishY + TILE_HEIGHT / 2 + 8);
-        
-        // "FINISH" text
         ctx.font = 'bold 16px Roboto';
         ctx.fillStyle = '#000';
-        ctx.fillText('FINISH', finishX + 75 , finishY + TILE_HEIGHT / 2 + 18);
+        ctx.fillText('FINISH', finishX + 75, finishY + TILE_HEIGHT / 2 + 18);
       }
 
-
-
-      // Draw player - COMPLETELY FIXED POSITION, only jumps
       const jumpOffset = isJumping ? getJumpOffset(jumpProgress) : 0;
       const playerY = PLAYER_SCREEN_Y - jumpOffset;
 
-      // Shadow on current block
       const shadowAlpha = isJumping ? 0.1 : 0.2;
       ctx.fillStyle = `rgba(0, 0, 0, ${shadowAlpha})`;
       ctx.beginPath();
-      ctx.ellipse(PLAYER_SCREEN_X, PLAYER_SCREEN_Y + BLOCK_DEPTH +10, 15, 6, 0, 0, Math.PI * 2);
+      ctx.ellipse(PLAYER_SCREEN_X, PLAYER_SCREEN_Y + BLOCK_DEPTH + 10, 15, 6, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      // Player body (isometric cube)
       const playerSize = 20;
       const playerColor = '#e74c3c';
       drawIsoBlock(ctx, PLAYER_SCREEN_X, playerY - playerSize, playerSize, playerSize / 2, playerSize, playerColor, darkMode);
 
-      // Player head (circle on top)
       ctx.fillStyle = '#ff7979';
       ctx.beginPath();
       ctx.arc(PLAYER_SCREEN_X, playerY - playerSize * 1.5, 12, 0, Math.PI * 2);
@@ -462,7 +389,6 @@ function GameMode3D({ darkMode, paraLength, wordType }) {
       ctx.lineWidth = 2;
       ctx.stroke();
 
-      // Eyes
       ctx.fillStyle = '#fff';
       ctx.beginPath();
       ctx.arc(PLAYER_SCREEN_X - 4, playerY - playerSize * 1.5 - 2, 3, 0, Math.PI * 2);
@@ -474,7 +400,6 @@ function GameMode3D({ darkMode, paraLength, wordType }) {
       ctx.arc(PLAYER_SCREEN_X + 4, playerY - playerSize * 1.5 - 2, 1.5, 0, Math.PI * 2);
       ctx.fill();
 
-      // Progress bar
       const progress = (currentLetterIndex / allLetters.length) * 100;
       const barWidth = CANVAS_WIDTH - 60;
       const barX = 30;
@@ -498,7 +423,6 @@ function GameMode3D({ darkMode, paraLength, wordType }) {
       ctx.textAlign = 'center';
       ctx.fillText(`${Math.floor(progress)}% Complete`, CANVAS_WIDTH / 2, barY + 22);
 
-      // Speed indicator
       const speedText = getSpeedDescription(playerSpeed);
       ctx.font = 'bold 20px Roboto';
       ctx.fillStyle = darkMode ? '#00ff88' : '#28a745';
@@ -520,7 +444,6 @@ function GameMode3D({ darkMode, paraLength, wordType }) {
     };
   }, [allLetters, currentLetterIndex, playerSpeed, darkMode, isJumping, jumpProgress, fallingBlocks, getSpeedDescription]);
 
-  // Handle typing
   const handleKeyPress = (e) => {
     if (e.key.length !== 1 && e.key !== ' ') return;
     if (currentLetterIndex >= allLetters.length) return;
@@ -536,7 +459,6 @@ function GameMode3D({ darkMode, paraLength, wordType }) {
       if (e.key === ' ') {
         setIsJumping(true);
         setJumpProgress(0);
-        // Mark current block as falling
         setFallingBlocks(prev => ({ ...prev, [currentLetterIndex]: 0 }));
         setCurrentLetterIndex(prev => prev + 1);
         setPlayerSpeed(prev => Math.min(prev + SPEED_INCREMENT, MAX_SPEED));
@@ -551,7 +473,6 @@ function GameMode3D({ darkMode, paraLength, wordType }) {
     if (typedChar === currentLetter.char.toLowerCase()) {
       setIsJumping(true);
       setJumpProgress(0);
-      // Mark current block as falling
       setFallingBlocks(prev => ({ ...prev, [currentLetterIndex]: 0 }));
       setCurrentLetterIndex(prev => prev + 1);
       setPlayerSpeed(prev => Math.min(prev + SPEED_INCREMENT, MAX_SPEED));
@@ -581,62 +502,85 @@ function GameMode3D({ darkMode, paraLength, wordType }) {
   };
 
   const resetGame = () => {
-  setCurrentLetterIndex(0);
-  setPlayerSpeed(MIN_SPEED);
-  setIsJumping(false);
-  setJumpProgress(0);
-  setIsPlaying(false);
-  setMistakes(0);
-  setCorrectLetters(0);
-  setTimeElapsed(0);
-  
-  const count = getWordCount();
-  
-  if (wordType === 'random') {
-    const randomChars = generateRandomLetters(count);
-    const letters = randomChars.map((char, idx) => ({
-      char: char,
-      wordIndex: 0,
-      isWordStart: false,
-      isWordEnd: false,
-      isSpace: char === ' '
-    }));
-    setAllLetters(letters);
-  } else {
-    const words = [];
-    for (let i = 0; i < count; i++) {
-      words.push(wordsList[Math.floor(Math.random() * wordsList.length)]);
+    setCurrentLetterIndex(0);
+    setPlayerSpeed(MIN_SPEED);
+    setIsJumping(false);
+    setJumpProgress(0);
+    setFallingBlocks({});
+    setIsPlaying(false);
+    setMistakes(0);
+    setCorrectLetters(0);
+    setTimeElapsed(0);
+    setShowShare(false);
+    
+    const count = getWordCount();
+    
+    if (wordType === 'random') {
+      const randomChars = generateRandomLetters(count);
+      const letters = randomChars.map((char) => ({
+        char: char,
+        wordIndex: 0,
+        isWordStart: false,
+        isWordEnd: false,
+        isSpace: char === ' '
+      }));
+      setAllLetters(letters);
+    } else {
+      const words = [];
+      for (let i = 0; i < count; i++) {
+        words.push(wordsList[Math.floor(Math.random() * wordsList.length)]);
+      }
+      
+      const letters = [];
+      words.forEach((word, wordIdx) => {
+        word.split('').forEach((char, charIdx) => {
+          letters.push({
+            char: char,
+            wordIndex: wordIdx,
+            isWordStart: charIdx === 0,
+            isWordEnd: charIdx === word.length - 1
+          });
+        });
+        if (wordIdx < words.length - 1) {
+          letters.push({
+            char: ' ',
+            wordIndex: wordIdx,
+            isSpace: true
+          });
+        }
+      });
+      
+      setAllLetters(letters);
     }
     
-    const letters = [];
-    words.forEach((word, wordIdx) => {
-      word.split('').forEach((char, charIdx) => {
-        letters.push({
-          char: char,
-          wordIndex: wordIdx,
-          isWordStart: charIdx === 0,
-          isWordEnd: charIdx === word.length - 1
-        });
-      });
-      if (wordIdx < words.length - 1) {
-        letters.push({
-          char: ' ',
-          wordIndex: wordIdx,
-          isSpace: true
-        });
-      }
-    });
+    if (inputRef.current) {
+      inputRef.current.value = '';
+    }
     
-    setAllLetters(letters);
-  }
-  
-  setTimeout(() => inputRef.current?.focus(), 100);
-};
-
+    setTimeout(() => inputRef.current?.focus(), 100);
+  };
 
   const isGameOver = currentLetterIndex >= allLetters.length && allLetters.length > 0;
   const wordCount = allLetters.filter(l => l.isWordEnd).length;
   const completedWords = allLetters.slice(0, currentLetterIndex).filter(l => l.isWordEnd).length;
+  const wpm = timeElapsed > 0 ? Math.round((completedWords / timeElapsed) * 60) : 0;
+
+  const getShareText = () => {
+    const wordTypeText = wordType === 'random' ? 'Random Letters' : 'Words';
+    return `⌨️ My 3D Speed Typing Game Results!
+  
+🚀 Can you beat my score?
+
+Words: ${completedWords}/${wordCount}
+Letters: ${correctLetters}/${allLetters.length}
+Time: ${timeElapsed}s
+WPM: ${wpm}
+Mode: ${wordTypeText}
+Mistakes: ${mistakes}
+
+----------
+⌨️ #speedtestyourtyping via speedtesttyping.net`;
+  };
 
   return (
     <div className="game-mode">
@@ -676,13 +620,57 @@ function GameMode3D({ darkMode, paraLength, wordType }) {
         <p>Letters: <span>{correctLetters}/{allLetters.length}</span></p>
         <p>Mistakes: <span>{mistakes}</span></p>
         <p>Time: <span>{timeElapsed}s</span></p>
-        <p>WPM: <span>{timeElapsed > 0 ? Math.round((completedWords / timeElapsed) * 60) : 0}</span></p>
+        <p>WPM: <span>{wpm}</span></p>
       </div>
 
       <div className="game-controls">
         <button onClick={resetGame}>New Tower</button>
-        {isGameOver && <p className="game-over">🏆 Master Climber! 🏆</p>}
+        {isGameOver && (
+          <>
+            <button className="share-btn" onClick={() => setShowShare(true)}>Share Results</button>
+            <p className="game-over">🏆 Master Climber! 🏆</p>
+          </>
+        )}
       </div>
+
+      {showShare && (
+        <div className="share-panel">
+          <h2>Share Your Results!</h2>
+          <p>Spread the word about your typing skills! 🚀</p>
+          <textarea
+            readOnly
+            value={getShareText()}
+          />
+          <div className="share-buttons">
+            <a
+              className="tweet-btn"
+              href={`https://x.com/intent/tweet?text=${encodeURIComponent(getShareText())}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Share on X
+            </a>
+            <a
+              className="threads-btn"
+              href={`https://www.threads.net/intent/post?text=${encodeURIComponent(getShareText())}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Share on Threads
+            </a>
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(getShareText());
+                alert('Copied to clipboard!');
+              }}
+            >
+              Copy Text
+            </button>
+            <button onClick={() => setShowShare(false)}>Close</button>
+          </div>
+          <p>Practice makes perfect! Keep climbing! 🎯</p>
+        </div>
+      )}
     </div>
   );
 }
