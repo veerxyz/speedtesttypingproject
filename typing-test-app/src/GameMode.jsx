@@ -412,7 +412,10 @@ function GameMode({ darkMode, paraLength, wordType }) {
       
       setAllLetters(letters);
     }
-    
+    // Clear the input field value ← ADD THIS
+    if (inputRef.current) {
+      inputRef.current.value = '';
+    }
     setTimeout(() => inputRef.current?.focus(), 100);
   };
 
