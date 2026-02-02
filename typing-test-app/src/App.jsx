@@ -58,7 +58,14 @@ function App() {
   };
 
   const getSavedParaLength = () => localStorage.getItem("paraLength") || "short";
-  const getSavedDarkMode = () => localStorage.getItem("darkMode") === "true";
+  // const getSavedDarkMode = () => localStorage.getItem("darkMode") === "true";
+  const getSavedDarkMode = () => {
+  const saved = localStorage.getItem("darkMode");
+  // If no preference saved yet, default to dark mode (true)
+  // Otherwise use the saved preference
+  return saved === null ? true : saved === "true";
+};
+
   const getSavedWordType = () => localStorage.getItem("wordType") || "words";
 
   const [paraLength, setParaLength] = useState(getSavedParaLength());
