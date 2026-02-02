@@ -263,27 +263,52 @@ function GameMode({ darkMode, paraLength, wordType }) {
       ctx.fill();
 
       const progress = (currentLetterIndex / allLetters.length) * 100;
-      const barWidth = CANVAS_WIDTH - 60;
-      const barX = 30;
-      const barY = 25;
-      
-      ctx.fillStyle = darkMode ? '#3a3a3a' : '#ddd';
-      ctx.fillRect(barX, barY, barWidth, 35);
-      
-      const progressGradient = ctx.createLinearGradient(barX, barY, barX + barWidth, barY);
-      progressGradient.addColorStop(0, '#28a745');
-      progressGradient.addColorStop(1, '#20c997');
-      ctx.fillStyle = progressGradient;
-      ctx.fillRect(barX, barY, (barWidth * progress) / 100, 35);
-      
-      ctx.strokeStyle = darkMode ? '#555' : '#999';
-      ctx.lineWidth = 3;
-      ctx.strokeRect(barX, barY, barWidth, 35);
-      
-      ctx.font = 'bold 18px Roboto';
-      ctx.fillStyle = darkMode ? '#fff' : '#000';
-      ctx.textAlign = 'center';
-      ctx.fillText(`${Math.floor(progress)}% Complete`, CANVAS_WIDTH / 2, barY + 22);
+const barWidth = CANVAS_WIDTH - 60;
+const barX = 30;
+const barY = 25;
+
+// Draw bar background
+ctx.fillStyle = darkMode ? '#2a2a2a' : '#ddd';
+ctx.fillRect(barX, barY, barWidth, 35);
+
+// Draw progress fill with gradient
+const progressGradient = ctx.createLinearGradient(barX, barY, barX + barWidth, barY);
+progressGradient.addColorStop(0, '#ffd700');  // Gold start
+progressGradient.addColorStop(1, '#ffed4e');  // Light gold end
+ctx.fillStyle = progressGradient;
+const filledWidth = (barWidth * progress) / 100;
+ctx.fillRect(barX, barY, filledWidth, 35);
+
+// Draw border
+ctx.strokeStyle = darkMode ? '#444' : '#999';
+ctx.lineWidth = 3;
+ctx.strokeRect(barX, barY, barWidth, 35);
+
+// Prepare text
+ctx.font = 'bold 18px Roboto';
+ctx.textAlign = 'center';
+const text = `${Math.floor(progress)}% Complete`;
+const textX = CANVAS_WIDTH / 2;
+const textY = barY + 22;
+
+// Draw text in BLACK for filled area (where gold bar is)
+ctx.save();
+ctx.beginPath();
+ctx.rect(barX, barY, filledWidth, 35); // Clip to filled area only
+ctx.clip();
+ctx.fillStyle = '#000'; // Black text on gold
+ctx.fillText(text, textX, textY);
+ctx.restore();
+
+// Draw text in WHITE/original color for unfilled area
+ctx.save();
+ctx.beginPath();
+ctx.rect(barX + filledWidth, barY, barWidth - filledWidth, 35); // Clip to unfilled area
+ctx.clip();
+ctx.fillStyle = darkMode ? '#fff' : '#000'; // White on dark, black on light
+ctx.fillText(text, textX, textY);
+ctx.restore();
+
 
       const speedText = getSpeedDescription(playerSpeed);
       ctx.font = 'bold 20px Roboto';
