@@ -4,7 +4,7 @@ import GameMode from './GameMode';
 import GameMode3D from './GameMode3D';
 
 function App() {
-  // List of common words for paragraph generation.
+  // List of common words for paragraph generation. 
   // const wordsList = [
   //   "lorem", "ipsum", "dolor", "sit", "amet", "consectetur", "adipiscing",
   //   "elit", "sed", "do", "eiusmod", "tempor", "incididunt", "ut", "labore",
