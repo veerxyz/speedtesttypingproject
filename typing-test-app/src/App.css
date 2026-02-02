@@ -11,14 +11,29 @@ body, .container {
   background-color: #e6ecf0;
 }
 
-body {
+/* body {
   margin: 0;
   font-family: 'Roboto', sans-serif;
-  background: #242424;
+  background: #1a1a1a;
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
+} */
+body {
+  margin: 0;
+  font-family: 'Roboto', sans-serif;
+  background: #5a0584;  /* Default light mode background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  transition: background-color 0.3s ease; /* Smooth transition */
+}
+
+/* Dark mode body background */
+body:has(.container.dark-mode) {
+  background: #1a1a1a;  /* Dark grey/black for dark mode */
 }
 
 .container {
@@ -33,7 +48,7 @@ body {
 }
 /* Light mode override — necessary when system is in dark mode */
 .container.light-mode {
-  background-color: #fff;
+  background-color: #f1f1f1;
   color: #000;
 }
 
