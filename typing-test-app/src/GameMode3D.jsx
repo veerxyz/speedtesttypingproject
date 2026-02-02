@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import './GameMode.css';
 
-function GameMode3D({ darkMode, paraLength }) {
+function GameMode3D({ darkMode, paraLength, wordType }) {
   const canvasRef = useRef(null);
   const [allLetters, setAllLetters] = useState([]);
   const [currentLetterIndex, setCurrentLetterIndex] = useState(0);
@@ -37,7 +37,18 @@ function GameMode3D({ darkMode, paraLength }) {
   "guide", "teach", "mentor", "coach", "train", "educate", "enlighten"
 ];
 
-
+ const generateRandomLetters = (count) => {
+  const letters = 'abcdefghijklmnopqrstuvwxyz';
+  let result = '';
+  
+  for (let i = 0; i < count * 5; i++) {
+    result += letters[Math.floor(Math.random() * letters.length)];
+    if (i > 0 && Math.random() < 0.15) {
+      result += ' ';
+    }
+  }
+  return result.trim().split('');
+};
   // Constants
   const MIN_SPEED = 0.025;
   const MAX_SPEED = 0.25;
@@ -58,6 +69,8 @@ function GameMode3D({ darkMode, paraLength }) {
     }
   };
 
+ 
+
   // Isometric projection: convert 3D world coords to 2D screen coords
   const toIso = (x, y, z) => {
     return {
@@ -68,7 +81,19 @@ function GameMode3D({ darkMode, paraLength }) {
 
   // Generate letter sequence
   useEffect(() => {
-    const count = getWordCount();
+  const count = getWordCount();
+  
+  if (wordType === 'random') {
+    const randomChars = generateRandomLetters(count);
+    const letters = randomChars.map((char) => ({
+      char: char,
+      wordIndex: 0,
+      isWordStart: false,
+      isWordEnd: false,
+      isSpace: char === ' '
+    }));
+    setAllLetters(letters);
+  } else {
     const words = [];
     for (let i = 0; i < count; i++) {
       words.push(wordsList[Math.floor(Math.random() * wordsList.length)]);
@@ -94,8 +119,10 @@ function GameMode3D({ darkMode, paraLength }) {
     });
     
     setAllLetters(letters);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paraLength]);
+  }
+// eslint-disable-next-line react-hooks/exhaustive-deps
+}, [paraLength, wordType]);
+
 
   // Game timer
   useEffect(() => {
@@ -554,17 +581,28 @@ function GameMode3D({ darkMode, paraLength }) {
   };
 
   const resetGame = () => {
-    setCurrentLetterIndex(0);
-    setPlayerSpeed(MIN_SPEED);
-    setIsJumping(false);
-    setJumpProgress(0);
-    setFallingBlocks({});
-    setIsPlaying(false);
-    setMistakes(0);
-    setCorrectLetters(0);
-    setTimeElapsed(0);
-    
-    const count = getWordCount();
+  setCurrentLetterIndex(0);
+  setPlayerSpeed(MIN_SPEED);
+  setIsJumping(false);
+  setJumpProgress(0);
+  setIsPlaying(false);
+  setMistakes(0);
+  setCorrectLetters(0);
+  setTimeElapsed(0);
+  
+  const count = getWordCount();
+  
+  if (wordType === 'random') {
+    const randomChars = generateRandomLetters(count);
+    const letters = randomChars.map((char, idx) => ({
+      char: char,
+      wordIndex: 0,
+      isWordStart: false,
+      isWordEnd: false,
+      isSpace: char === ' '
+    }));
+    setAllLetters(letters);
+  } else {
     const words = [];
     for (let i = 0; i < count; i++) {
       words.push(wordsList[Math.floor(Math.random() * wordsList.length)]);
@@ -590,13 +628,11 @@ function GameMode3D({ darkMode, paraLength }) {
     });
     
     setAllLetters(letters);
-     // CLEAR THE INPUT FIELD
-    if (inputRef.current) {
-      inputRef.current.value = '';  // ← ADD THIS LINE
-    }
+  }
   
-    setTimeout(() => inputRef.current?.focus(), 100);
-  };
+  setTimeout(() => inputRef.current?.focus(), 100);
+};
+
 
   const isGameOver = currentLetterIndex >= allLetters.length && allLetters.length > 0;
   const wordCount = allLetters.filter(l => l.isWordEnd).length;

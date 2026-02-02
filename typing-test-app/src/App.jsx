@@ -1,22 +1,53 @@
 import { useState, useEffect, useRef } from 'react';
 import './App.css';
 import GameMode from './GameMode';
-import GameMode3D from './GameMode3D'; // ADD THIS IMPORT
+import GameMode3D from './GameMode3D';
 
 function App() {
   // List of common words for paragraph generation.
+  // const wordsList = [
+  //   "lorem", "ipsum", "dolor", "sit", "amet", "consectetur", "adipiscing",
+  //   "elit", "sed", "do", "eiusmod", "tempor", "incididunt", "ut", "labore",
+  //   "et", "dolore", "magna", "aliqua", "enim", "ad", "minim", "veniam",
+  //   "quis", "nostrud", "exercitation", "ullamco", "laboris", "nisi", "aliquip",
+  //   "ex", "ea", "commodo", "consequat", "duis", "aute", "irure", "in",
+  //   "reprehenderit", "voluptate", "velit", "esse", "cillum", "fugiat",
+  //   "nulla", "pariatur", "excepteur", "sint", "occaecat", "cupidatat", "proident",
+  //   "sunt", "culpa", "officia", "deserunt", "mollit", "anim", "id", "est", "laborum"
+  // ];
   const wordsList = [
-    "lorem", "ipsum", "dolor", "sit", "amet", "consectetur", "adipiscing",
-    "elit", "sed", "do", "eiusmod", "tempor", "incididunt", "ut", "labore",
-    "et", "dolore", "magna", "aliqua", "enim", "ad", "minim", "veniam",
-    "quis", "nostrud", "exercitation", "ullamco", "laboris", "nisi", "aliquip",
-    "ex", "ea", "commodo", "consequat", "duis", "aute", "irure", "in",
-    "reprehenderit", "voluptate", "velit", "esse", "cillum", "fugiat",
-    "nulla", "pariatur", "excepteur", "sint", "occaecat", "cupidatat", "proident",
-    "sunt", "culpa", "officia", "deserunt", "mollit", "anim", "id", "est", "laborum"
-  ];
+  "hello", "world", "speed", "type", "fast", "game", "run", "jump",
+  "quick", "brown", "fox", "lazy", "dog", "code", "react", "build",
+  "learn", "practice", "skill", "master", "focus", "flow", "zone",
+  "power", "boost", "dash", "sprint", "race", "track", "path", "win",
+  "think", "create", "design", "develop", "deploy", "test", "debug",
+  "solve", "achieve", "grow", "improve", "excel", "succeed", "thrive",
+  "innovate", "explore", "discover", "advance", "progress", "evolve",
+  "optimize", "refactor", "implement", "execute", "deliver", "ship",
+  "launch", "scale", "iterate", "enhance", "upgrade", "transform",
+  "pioneer", "lead", "inspire", "motivate", "empower", "enable",
+  "accelerate", "streamline", "automate", "integrate", "connect", "sync",
+  "collaborate", "communicate", "share", "contribute", "support", "assist",
+  "guide", "teach", "mentor", "coach", "train", "educate", "enlighten"
+];
 
-  const generateParagraph = (minWords, maxWords) => {
+  const generateParagraph = (minWords, maxWords, useWords = true) => {
+    if (!useWords) {
+      // Generate random scrambled letters
+      const totalChars = Math.floor(Math.random() * (maxWords * 6 - minWords * 4 + 1)) + minWords * 4;
+      let scrambled = '';
+      const letters = 'abcdefghijklmnopqrstuvwxyz';
+      
+      for (let i = 0; i < totalChars; i++) {
+        scrambled += letters[Math.floor(Math.random() * letters.length)];
+        if (i > 0 && Math.random() < 0.15) {
+          scrambled += ' ';
+        }
+      }
+      return scrambled.trim();
+    }
+    
+    // Original word-based generation
     const wordCount = Math.floor(Math.random() * (maxWords - minWords + 1)) + minWords;
     const paragraphArray = [];
     for (let i = 0; i < wordCount; i++) {
@@ -28,9 +59,11 @@ function App() {
 
   const getSavedParaLength = () => localStorage.getItem("paraLength") || "short";
   const getSavedDarkMode = () => localStorage.getItem("darkMode") === "true";
+  const getSavedWordType = () => localStorage.getItem("wordType") || "words";
 
   const [paraLength, setParaLength] = useState(getSavedParaLength());
   const [darkMode, setDarkMode] = useState(getSavedDarkMode());
+  const [wordType, setWordType] = useState(getSavedWordType());
   const [showSettings, setShowSettings] = useState(false);
 
   const [testText, setTestText] = useState("");
@@ -40,7 +73,7 @@ function App() {
   const [wpm, setWpm] = useState(0);
   const [accuracy, setAccuracy] = useState(100);
   const [isFinished, setIsFinished] = useState(false);
-  const [mode, setMode] = useState('game3d'); // Changed default to test
+  const [mode, setMode] = useState('game3d');
 
   const intervalRef = useRef(null);
   const promptRef = useRef(null);
@@ -59,7 +92,7 @@ function App() {
 
   useEffect(() => {
     const { min, max } = getWordRange(paraLength);
-    setTestText(generateParagraph(min, max));
+    setTestText(generateParagraph(min, max, wordType === 'words'));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -112,7 +145,7 @@ function App() {
     setIsStarted(false);
     setIsFinished(false);
     const { min, max } = getWordRange(paraLength);
-    setTestText(generateParagraph(min, max));
+    setTestText(generateParagraph(min, max, wordType === 'words'));
     if (promptRef.current) promptRef.current.scrollTop = 0;
   };
 
@@ -163,8 +196,26 @@ function App() {
     setIsStarted(false);
     setIsFinished(false);
     const { min, max } = getWordRange(value);
-    setTestText(generateParagraph(min, max));
+    setTestText(generateParagraph(min, max, wordType === 'words'));
 
+    if (promptRef.current) promptRef.current.scrollTop = 0;
+  };
+
+  const handleWordTypeChange = (e) => {
+    const value = e.target.value;
+    setWordType(value);
+    localStorage.setItem("wordType", value);
+    
+    clearInterval(intervalRef.current);
+    setUserInput('');
+    setTimeElapsed(0);
+    setWpm(0);
+    setAccuracy(100);
+    setIsStarted(false);
+    setIsFinished(false);
+    const { min, max } = getWordRange(paraLength);
+    setTestText(generateParagraph(min, max, value === 'words'));
+    
     if (promptRef.current) promptRef.current.scrollTop = 0;
   };
 
@@ -235,6 +286,16 @@ function App() {
           <option value="game3d">3D Isometric</option>
         </select>
 
+        <label htmlFor="word-type">Word Type:</label>
+        <select
+          id="word-type"
+          value={wordType}
+          onChange={handleWordTypeChange}
+        >
+          <option value="words">Words</option>
+          <option value="random">Random Letters</option>
+        </select>
+
         <label htmlFor="para-length">Paragraph Length:</label>
         <select
           id="para-length"
@@ -291,9 +352,9 @@ function App() {
             </section>
           </>
         ) : mode === "game" ? (
-          <GameMode darkMode={darkMode} paraLength={paraLength} />
+          <GameMode darkMode={darkMode} paraLength={paraLength} wordType={wordType} />
         ) : (
-          <GameMode3D darkMode={darkMode} paraLength={paraLength} />
+          <GameMode3D darkMode={darkMode} paraLength={paraLength} wordType={wordType} />
         )}
       </main>
 

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import './GameMode.css';
 
-function GameMode({ darkMode, paraLength }) {
+function GameMode({ darkMode, paraLength, wordType }) {
   const canvasRef = useRef(null);
   const [allLetters, setAllLetters] = useState([]);
   const [currentLetterIndex, setCurrentLetterIndex] = useState(0);
@@ -18,12 +18,21 @@ function GameMode({ darkMode, paraLength }) {
   const intervalRef = useRef(null);
   const inputRef = useRef(null);
 
-  const wordsList = [
-    "hello", "world", "speed", "type", "fast", "game", "run", "jump",
-    "quick", "brown", "fox", "lazy", "dog", "code", "react", "build",
-    "learn", "practice", "skill", "master", "focus", "flow", "zone",
-    "power", "boost", "dash", "sprint", "race", "track", "path", "win"
-  ];
+ const wordsList = [
+  "hello", "world", "speed", "type", "fast", "game", "run", "jump",
+  "quick", "brown", "fox", "lazy", "dog", "code", "react", "build",
+  "learn", "practice", "skill", "master", "focus", "flow", "zone",
+  "power", "boost", "dash", "sprint", "race", "track", "path", "win",
+  "think", "create", "design", "develop", "deploy", "test", "debug",
+  "solve", "achieve", "grow", "improve", "excel", "succeed", "thrive",
+  "innovate", "explore", "discover", "advance", "progress", "evolve",
+  "optimize", "refactor", "implement", "execute", "deliver", "ship",
+  "launch", "scale", "iterate", "enhance", "upgrade", "transform",
+  "pioneer", "lead", "inspire", "motivate", "empower", "enable",
+  "accelerate", "streamline", "automate", "integrate", "connect", "sync",
+  "collaborate", "communicate", "share", "contribute", "support", "assist",
+  "guide", "teach", "mentor", "coach", "train", "educate", "enlighten"
+];
 
   // Constants
   const MIN_SPEED = 0.025;
@@ -41,36 +50,62 @@ function GameMode({ darkMode, paraLength }) {
     }
   };
 
+  const generateRandomLetters = (count) => {
+    const letters = 'abcdefghijklmnopqrstuvwxyz';
+    let result = '';
+    
+    for (let i = 0; i < count * 5; i++) {
+      result += letters[Math.floor(Math.random() * letters.length)];
+      if (i > 0 && Math.random() < 0.15) {
+        result += ' ';
+      }
+    }
+    return result.trim().split('');
+  };
+
   // Generate letter sequence
   useEffect(() => {
     const count = getWordCount();
-    const words = [];
-    for (let i = 0; i < count; i++) {
-      words.push(wordsList[Math.floor(Math.random() * wordsList.length)]);
-    }
     
-    const letters = [];
-    words.forEach((word, wordIdx) => {
-      word.split('').forEach((char, charIdx) => {
-        letters.push({
-          char: char,
-          wordIndex: wordIdx,
-          isWordStart: charIdx === 0,
-          isWordEnd: charIdx === word.length - 1
-        });
-      });
-      if (wordIdx < words.length - 1) {
-        letters.push({
-          char: ' ',
-          wordIndex: wordIdx,
-          isSpace: true
-        });
+    if (wordType === 'random') {
+      const randomChars = generateRandomLetters(count);
+      const letters = randomChars.map((char) => ({
+        char: char,
+        wordIndex: 0,
+        isWordStart: false,
+        isWordEnd: false,
+        isSpace: char === ' '
+      }));
+      setAllLetters(letters);
+    } else {
+      const words = [];
+      for (let i = 0; i < count; i++) {
+        words.push(wordsList[Math.floor(Math.random() * wordsList.length)]);
       }
-    });
-    
-    setAllLetters(letters);
+      
+      const letters = [];
+      words.forEach((word, wordIdx) => {
+        word.split('').forEach((char, charIdx) => {
+          letters.push({
+            char: char,
+            wordIndex: wordIdx,
+            isWordStart: charIdx === 0,
+            isWordEnd: charIdx === word.length - 1
+          });
+        });
+        if (wordIdx < words.length - 1) {
+          letters.push({
+            char: ' ',
+            wordIndex: wordIdx,
+            isSpace: true
+          });
+        }
+      });
+      
+      setAllLetters(letters);
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paraLength]);
+  }, [paraLength, wordType]);
 
   // Game timer
   useEffect(() => {
@@ -104,12 +139,10 @@ function GameMode({ darkMode, paraLength }) {
     const CANVAS_WIDTH = canvas.width;
     const CANVAS_HEIGHT = canvas.height;
     
-    // Player is ALWAYS FIXED at this position
     const PLAYER_FIXED_X = CANVAS_WIDTH / 2;
-    const PLAYER_FIXED_Y = CANVAS_HEIGHT / 2 + 50; // Center vertically (a bit lower)
+    const PLAYER_FIXED_Y = CANVAS_HEIGHT / 2 + 50;
 
     const animate = () => {
-      // Update jump animation
       if (isJumping) {
         setJumpProgress(prev => {
           const newProgress = prev + 0.08;
@@ -121,11 +154,9 @@ function GameMode({ darkMode, paraLength }) {
         });
       }
 
-      // Clear canvas
       ctx.fillStyle = darkMode ? '#2c2c2c' : '#e6ecf0';
       ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-      // Draw ground reference (always at bottom)
       ctx.strokeStyle = darkMode ? '#555' : '#999';
       ctx.lineWidth = 3;
       ctx.beginPath();
@@ -133,27 +164,17 @@ function GameMode({ darkMode, paraLength }) {
       ctx.lineTo(CANVAS_WIDTH, CANVAS_HEIGHT - 30);
       ctx.stroke();
 
-      // Draw stairs - they move both LEFT and DOWN
       const stepsToShow = 12;
       const startIdx = Math.max(0, currentLetterIndex - 3);
       const endIdx = Math.min(allLetters.length, currentLetterIndex + stepsToShow);
 
       for (let i = startIdx; i < endIdx; i++) {
         const letter = allLetters[i];
-        
-        // Calculate position relative to current letter
         const relativeIndex = i - currentLetterIndex;
-        
-        // X position: current letter at player X, others scroll left from it
         const stepX = PLAYER_FIXED_X + (relativeIndex * STEP_WIDTH) - STEP_WIDTH / 2;
-        
-        // Y position: current letter at player Y, stairs go UP to the right, DOWN to the left
-        // This creates the effect of stairs moving down as you climb
         const stepY = PLAYER_FIXED_Y + (relativeIndex * STEP_HEIGHT);
 
-        // Draw step
         if (letter.isSpace) {
-          // Space step - dashed outline
           ctx.strokeStyle = darkMode ? '#666' : '#bbb';
           ctx.lineWidth = 2;
           ctx.setLineDash([5, 5]);
@@ -166,16 +187,13 @@ function GameMode({ darkMode, paraLength }) {
           ctx.textBaseline = 'middle';
           ctx.fillText('⎵', stepX + STEP_WIDTH / 2, stepY + STEP_HEIGHT / 2);
         } else {
-          // Regular step
           let stepColor;
           if (i < currentLetterIndex) {
-            // Completed - green
             const gradient = ctx.createLinearGradient(stepX, stepY, stepX, stepY + STEP_HEIGHT);
             gradient.addColorStop(0, darkMode ? '#3a5f4a' : '#b8e6b8');
             gradient.addColorStop(1, darkMode ? '#2d4a38' : '#90d990');
             stepColor = gradient;
           } else if (i === currentLetterIndex) {
-            // Current - gold with glow
             const gradient = ctx.createLinearGradient(stepX, stepY, stepX, stepY + STEP_HEIGHT);
             gradient.addColorStop(0, '#ffe873');
             gradient.addColorStop(1, '#ffd700');
@@ -183,7 +201,6 @@ function GameMode({ darkMode, paraLength }) {
             ctx.shadowColor = '#ffd700';
             ctx.shadowBlur = 25;
           } else {
-            // Upcoming - gray
             stepColor = darkMode ? '#3a3a3a' : '#d0d0d0';
           }
           
@@ -191,12 +208,10 @@ function GameMode({ darkMode, paraLength }) {
           ctx.fillRect(stepX, stepY, STEP_WIDTH, STEP_HEIGHT);
           ctx.shadowBlur = 0;
           
-          // Step border
           ctx.strokeStyle = darkMode ? '#555' : '#888';
           ctx.lineWidth = 2;
           ctx.strokeRect(stepX, stepY, STEP_WIDTH, STEP_HEIGHT);
           
-          // Letter
           ctx.font = i === currentLetterIndex ? 'bold 28px Roboto' : 'bold 20px Roboto';
           ctx.fillStyle = i === currentLetterIndex ? '#000' : (darkMode ? '#e0e0e0' : '#222');
           ctx.textAlign = 'center';
@@ -205,11 +220,9 @@ function GameMode({ darkMode, paraLength }) {
         }
       }
 
-      // Draw player - COMPLETELY FIXED position, only jumps
       const jumpOffset = isJumping ? getJumpOffset(jumpProgress) : 0;
       const playerY = PLAYER_FIXED_Y - 25 - jumpOffset;
 
-      // Shadow
       const shadowAlpha = isJumping ? 0.1 : 0.25;
       const shadowSize = isJumping ? 10 : 14;
       ctx.fillStyle = `rgba(0, 0, 0, ${shadowAlpha})`;
@@ -217,7 +230,6 @@ function GameMode({ darkMode, paraLength }) {
       ctx.ellipse(PLAYER_FIXED_X, PLAYER_FIXED_Y - 5, shadowSize, 5, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      // Player body
       const playerGradient = ctx.createRadialGradient(
         PLAYER_FIXED_X - 6,
         playerY - 6,
@@ -233,12 +245,10 @@ function GameMode({ darkMode, paraLength }) {
       ctx.arc(PLAYER_FIXED_X, playerY, 18, 0, Math.PI * 2);
       ctx.fill();
       
-      // Outline
       ctx.strokeStyle = '#c0392b';
       ctx.lineWidth = 3;
       ctx.stroke();
 
-      // Eye
       ctx.fillStyle = '#fff';
       ctx.beginPath();
       ctx.arc(PLAYER_FIXED_X + 6, playerY - 4, 5, 0, Math.PI * 2);
@@ -248,7 +258,6 @@ function GameMode({ darkMode, paraLength }) {
       ctx.arc(PLAYER_FIXED_X + 6, playerY - 4, 2.5, 0, Math.PI * 2);
       ctx.fill();
 
-      // Progress bar
       const progress = (currentLetterIndex / allLetters.length) * 100;
       const barWidth = CANVAS_WIDTH - 60;
       const barX = 30;
@@ -272,7 +281,6 @@ function GameMode({ darkMode, paraLength }) {
       ctx.textAlign = 'center';
       ctx.fillText(`${Math.floor(progress)}% Complete`, CANVAS_WIDTH / 2, barY + 22);
 
-      // Speed indicator
       const speedText = getSpeedDescription(playerSpeed);
       ctx.font = 'bold 20px Roboto';
       ctx.fillStyle = darkMode ? '#00ff88' : '#28a745';
@@ -306,7 +314,6 @@ function GameMode({ darkMode, paraLength }) {
       setIsPlaying(true);
     }
 
-    // Handle space
     if (currentLetter.isSpace) {
       if (e.key === ' ') {
         setIsJumping(true);
@@ -321,7 +328,6 @@ function GameMode({ darkMode, paraLength }) {
       return;
     }
 
-    // Handle letter
     if (typedChar === currentLetter.char.toLowerCase()) {
       setIsJumping(true);
       setJumpProgress(0);
@@ -363,31 +369,45 @@ function GameMode({ darkMode, paraLength }) {
     setTimeElapsed(0);
     
     const count = getWordCount();
-    const words = [];
-    for (let i = 0; i < count; i++) {
-      words.push(wordsList[Math.floor(Math.random() * wordsList.length)]);
+    
+    if (wordType === 'random') {
+      const randomChars = generateRandomLetters(count);
+      const letters = randomChars.map((char) => ({
+        char: char,
+        wordIndex: 0,
+        isWordStart: false,
+        isWordEnd: false,
+        isSpace: char === ' '
+      }));
+      setAllLetters(letters);
+    } else {
+      const words = [];
+      for (let i = 0; i < count; i++) {
+        words.push(wordsList[Math.floor(Math.random() * wordsList.length)]);
+      }
+      
+      const letters = [];
+      words.forEach((word, wordIdx) => {
+        word.split('').forEach((char, charIdx) => {
+          letters.push({
+            char: char,
+            wordIndex: wordIdx,
+            isWordStart: charIdx === 0,
+            isWordEnd: charIdx === word.length - 1
+          });
+        });
+        if (wordIdx < words.length - 1) {
+          letters.push({
+            char: ' ',
+            wordIndex: wordIdx,
+            isSpace: true
+          });
+        }
+      });
+      
+      setAllLetters(letters);
     }
     
-    const letters = [];
-    words.forEach((word, wordIdx) => {
-      word.split('').forEach((char, charIdx) => {
-        letters.push({
-          char: char,
-          wordIndex: wordIdx,
-          isWordStart: charIdx === 0,
-          isWordEnd: charIdx === word.length - 1
-        });
-      });
-      if (wordIdx < words.length - 1) {
-        letters.push({
-          char: ' ',
-          wordIndex: wordIdx,
-          isSpace: true
-        });
-      }
-    });
-    
-    setAllLetters(letters);
     setTimeout(() => inputRef.current?.focus(), 100);
   };
 
