@@ -21,8 +21,7 @@ function GameMode3D({ darkMode, paraLength, wordType }) {
   const animationRef = useRef(null);
   const intervalRef = useRef(null);
   const inputRef = useRef(null);
-  const correctSoundRef = useRef(null);
-  const wrongSoundRef = useRef(null);
+  
   const audioContextRef = useRef(null);
 
   const wordsList = [
