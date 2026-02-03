@@ -510,7 +510,7 @@ Mistakes: ${mistakes}
           disabled={isGameOver}
         />
         <div className="game-hint">
-          {!isPlaying && <span>👆 Click and type to start climbing!</span>}
+          {!isPlaying && <span>👆 Click and type to start descending!</span>}
           {isPlaying && currentLetterIndex < allLetters.length && (
             <span>
               Type: <strong>{allLetters[currentLetterIndex].isSpace ? '[SPACE]' : allLetters[currentLetterIndex].char.toUpperCase()}</strong>
