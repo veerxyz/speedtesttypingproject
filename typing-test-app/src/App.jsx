@@ -1,3 +1,4 @@
+// Version 1.4 [publish branch, added 2d stairs but major focus on 3d mode]
 import { useState, useEffect, useRef } from 'react';
 import './App.css';
 import GameMode from './GameMode';
