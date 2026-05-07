@@ -1,3 +1,4 @@
+//publish V1.8 : custom domain implementation
 import { useState, useEffect, useRef } from 'react';
 import './App.css';
 import GameMode from './GameMode';
