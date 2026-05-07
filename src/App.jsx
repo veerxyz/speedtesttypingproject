@@ -1,3 +1,4 @@
+//publish V1.7: basic fixes
 import { useState, useEffect, useRef } from 'react';
 import './App.css';
 import GameMode from './GameMode';
