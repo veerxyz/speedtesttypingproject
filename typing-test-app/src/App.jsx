@@ -1,3 +1,5 @@
+// Version 1.5 [publish branch,added ko-fi link]
+
 import { useState, useEffect, useRef } from 'react';
 import './App.css';
 import GameMode from './GameMode';
