@@ -292,3 +292,34 @@ share-buttons a {
   border-color: #555;
   color: #f1f1f1;
 }
+.kofi-banner {
+  margin-top: 1.5rem;
+  padding: 0.6rem 1.2rem;
+  background-color: #fff3cd;
+  border-left: 4px solid #ffd700;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #333;
+  text-align: center;
+}
+
+.kofi-banner a {
+  color: #bf6c00;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.kofi-banner a:hover {
+  text-decoration: underline;
+}
+
+.container.dark-mode .kofi-banner {
+  background-color: #3a3100;
+  color: #ffe680;
+  border-left-color: #ffd700;
+}
+
+.container.dark-mode .kofi-banner a {
+  color: #ffd700;
+}

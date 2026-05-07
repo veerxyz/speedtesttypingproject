@@ -363,6 +363,9 @@ function App() {
         ) : (
           <GameMode3D darkMode={darkMode} paraLength={paraLength} wordType={wordType} />
         )}
+        <div className="kofi-banner">
+        ☕ <a href="https://ko-fi.com/theindiecompny" target="_blank" rel="noopener noreferrer">Support this project on Ko-fi</a> — help keep it alive & improve it!
+        </div>
       </main>
 
       <footer className="footer">
