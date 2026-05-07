@@ -1,3 +1,4 @@
+//publish v1.6 branch : added to github pages and migrated code to root coz of that.
 import { useState, useEffect, useRef } from 'react';
 import './App.css';
 import GameMode from './GameMode';
